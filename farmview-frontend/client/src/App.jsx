@@ -16,16 +16,27 @@ import FieldAdvisor from './pages/FieldAdvisor';
 import ClaimsDashboard from './pages/ClaimsDashboard';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
+import CropIntelligence from './pages/CropIntelligence';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAuthStore();
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  const token = localStorage.getItem('token');
+  
+  // Only log once per render
+  const shouldAllowAccess = token || isAuthenticated;
+  
+  if (!shouldAllowAccess) {
+    console.log('No authentication, redirecting to login');
+    return <Navigate to="/login" replace />;
+  }
+  
+  return children;
 };
 
 function App() {
   return (
-    <Router>
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Toaster
         position="top-right"
         toastOptions={{
@@ -123,6 +134,14 @@ function App() {
           element={
             <ProtectedRoute>
               <ClaimsDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/crop-intelligence"
+          element={
+            <ProtectedRoute>
+              <CropIntelligence />
             </ProtectedRoute>
           }
         />

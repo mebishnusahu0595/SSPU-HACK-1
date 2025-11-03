@@ -118,17 +118,20 @@ router.get('/dashboard/stats', authAdmin, async (req, res) => {
     
     // ONLY manual pending documents (exclude AI-verified)
     const pendingDocuments = await Document.countDocuments({
-      status: 'Pending',
+      $or: [
+        { status: 'Pending' },
+        { status: 'Pending Verification' }
+      ],
       verificationStatus: { $ne: 'auto-verified' }, // Exclude AI-verified
       verificationMethod: { $ne: 'ocr-ai' } // Exclude OCR-AI method
     });
     
     const verifiedDocuments = await Document.countDocuments({
-      status: 'Verified'
+      verificationStatus: 'verified'
     });
     
     const rejectedDocuments = await Document.countDocuments({
-      status: 'Rejected'
+      verificationStatus: 'rejected'
     });
 
     // AI-verified documents count (not shown to admin)
@@ -139,11 +142,14 @@ router.get('/dashboard/stats', authAdmin, async (req, res) => {
 
     // Recent activities
     const recentDocuments = await Document.find({
-      status: 'Pending',
+      $or: [
+        { status: 'Pending' },
+        { status: 'Pending Verification' }
+      ],
       verificationStatus: { $ne: 'auto-verified' },
       verificationMethod: { $ne: 'ocr-ai' }
     })
-      .populate('uploadedBy', 'name email phone')
+      .populate('farmer', 'name email phone')
       .sort({ createdAt: -1 })
       .limit(5);
 
@@ -183,15 +189,21 @@ router.get('/documents/pending', authAdmin, async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    // ONLY manual pending documents (exclude AI-verified)
+    // Get all pending documents (both "Pending" and "Pending Verification")
+    // Exclude AI-verified documents
     const query = {
-      status: 'Pending',
-      verificationStatus: { $ne: 'auto-verified' },
-      verificationMethod: { $ne: 'ocr-ai' }
+      $or: [
+        { status: 'Pending' },
+        { status: 'Pending Verification' }
+      ],
+      $and: [
+        { verificationStatus: { $ne: 'auto-verified' } },
+        { verificationMethod: { $ne: 'ocr-ai' } }
+      ]
     };
 
     const documents = await Document.find(query)
-      .populate('uploadedBy', 'name email phone')
+      .populate('farmer', 'name email phone')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
@@ -335,9 +347,10 @@ router.put('/documents/:id/verify', authAdmin, async (req, res) => {
       });
     }
 
-    // Update document
-    document.status = status;
+    // Update document verification fields
     document.verificationStatus = status === 'Verified' ? 'verified' : 'rejected';
+    document.isVerified = status === 'Verified';
+    document.status = status === 'Verified' ? 'Active' : 'Pending Verification';
     document.verificationMethod = 'manual';
     document.verifiedBy = req.admin._id;
     document.verifiedAt = new Date();
@@ -501,6 +514,68 @@ router.post('/create-admin', authAdmin, authSuperAdmin, async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to create admin'
+    });
+  }
+});
+
+// Get All Properties
+router.get('/properties', authAdmin, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const properties = await Property.find()
+      .populate('farmer', 'name email phone farmerId')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const total = await Property.countDocuments();
+
+    res.json({
+      success: true,
+      data: properties,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    });
+
+  } catch (err) {
+    console.error('Get properties error:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch properties'
+    });
+  }
+});
+
+// Get Property Details
+router.get('/properties/:id', authAdmin, async (req, res) => {
+  try {
+    const property = await Property.findById(req.params.id)
+      .populate('farmer', 'name email phone farmerId address');
+
+    if (!property) {
+      return res.status(404).json({
+        success: false,
+        message: 'Property not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: property
+    });
+
+  } catch (err) {
+    console.error('Get property details error:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch property details'
     });
   }
 });

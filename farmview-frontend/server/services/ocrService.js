@@ -11,7 +11,7 @@ const fs = require('fs').promises;
 class OCRService {
   
   /**
-   * Extract text from image (JPG, PNG, JPEG)
+   * Extract text from image (JPG, PNG, JPEG)A
    */
   async extractFromImage(imagePath) {
     try {

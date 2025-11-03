@@ -70,7 +70,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center space-x-2">
                 <FaMapMarkerAlt className="text-primary-500" />
-                <span>Pune, Maharashtra, India</span>
+                <span>Bhilai, Chhattisgarh, India</span>
               </div>
             </div>
           </div>

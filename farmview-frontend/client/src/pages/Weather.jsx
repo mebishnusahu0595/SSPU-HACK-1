@@ -5,6 +5,7 @@ import { FaCloudSun, FaTemperatureHigh, FaTint, FaWind, FaCompass, FaSun, FaBrai
 import { WiHumidity, WiBarometer } from 'react-icons/wi';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import AIChatbot from '../components/AIChatbot';
 import api from '../utils/api';
 import toast from 'react-hot-toast';
 
@@ -154,6 +155,10 @@ export default function Weather() {
           </div>
         </div>
       </div>
+      
+      {/* AI Chatbot */}
+      <AIChatbot />
+      
       <Footer />
     </div>
   );

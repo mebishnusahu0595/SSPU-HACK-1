@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/auth.middleware');
 const Property = require('../models/Property.model');
+const Activity = require('../models/Activity.model');
 const multer = require('multer');
 const mongoose = require('mongoose');
 const axios = require('axios');
@@ -172,6 +173,16 @@ router.post('/', protect, upload.array('documents', 5), async (req, res) => {
       console.error('⚠️ Weather fetch failed (non-critical):', weatherError.message);
       // Don't fail property creation if weather fetch fails
     }
+
+    // Log activity
+    await Activity.create({
+      farmer: req.farmer._id,
+      type: 'property_added',
+      title: 'New Property Added',
+      description: `Added property: ${propertyName} (${area} ${areaUnit || 'acres'})`,
+      icon: '🏡',
+      metadata: { propertyId: property._id, propertyName }
+    }).catch(err => console.error('Activity log error:', err));
 
     res.status(201).json({
       success: true,

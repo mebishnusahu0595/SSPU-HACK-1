@@ -7,7 +7,6 @@ exports.authAdmin = async (req, res, next) => {
     const token = req.header('Authorization')?.replace('Bearer ', '');
     
     if (!token) {
-      console.log('❌ No token provided');
       return res.status(401).json({ 
         success: false, 
         message: 'Access denied. No admin token provided.' 
@@ -15,11 +14,9 @@ exports.authAdmin = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log('✅ Token decoded:', { id: decoded.id, role: decoded.role, username: decoded.username });
     
     // Check if it's an admin token
     if (decoded.role !== 'admin' && decoded.role !== 'super-admin' && decoded.role !== 'moderator') {
-      console.log('❌ Not an admin role:', decoded.role);
       return res.status(403).json({ 
         success: false, 
         message: 'Access denied. Admin privileges required.' 
@@ -29,7 +26,6 @@ exports.authAdmin = async (req, res, next) => {
     const admin = await Admin.findById(decoded.id).select('-password');
     
     if (!admin) {
-      console.log('❌ Admin not found with id:', decoded.id);
       return res.status(401).json({ 
         success: false, 
         message: 'Invalid admin token.' 
@@ -37,14 +33,12 @@ exports.authAdmin = async (req, res, next) => {
     }
 
     if (!admin.isActive) {
-      console.log('❌ Admin account inactive:', admin.username);
       return res.status(403).json({ 
         success: false, 
         message: 'Admin account is inactive.' 
       });
     }
 
-    console.log('✅ Admin authenticated:', admin.username);
     req.admin = admin;
     next();
   } catch (err) {

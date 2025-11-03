@@ -38,7 +38,7 @@ export default function Header() {
     { path: '/insurance', icon: <FaShieldAlt />, label: t('nav.insurance') || 'Insurance' },
     { path: '/claims', icon: <FaExclamationCircle />, label: 'Claims' },
     { path: '/weather', icon: <FaCloudSun />, label: t('nav.weather') || 'Weather' },
-    { path: '/field-advisor', icon: <FaRobot />, label: 'AI Advisor', highlight: true }
+    { path: '/field-advisor', icon: <FaRobot />, label: 'AI Advisor' }
   ] : [];
 
   const isActive = (path) => location.pathname === path;

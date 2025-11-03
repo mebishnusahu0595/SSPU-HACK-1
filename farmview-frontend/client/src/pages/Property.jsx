@@ -8,6 +8,7 @@ import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-draw';
 import api from '../utils/api';
 import SatelliteNDVI from '../components/SatelliteNDVI';
+import AIChatbot from '../components/AIChatbot';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
@@ -29,6 +30,12 @@ export default function Property() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState(null); // For satellite analysis
+  
+  // Crop recommendation states
+  const [allCrops, setAllCrops] = useState([]);
+  const [recommendedCrops, setRecommendedCrops] = useState(null);
+  const [showRecommendations, setShowRecommendations] = useState(false);
+  const [loadingRecommendations, setLoadingRecommendations] = useState(false);
 
   // Fetch all properties for the farmer
   const fetchProperties = async () => {
@@ -49,8 +56,57 @@ export default function Property() {
     }
   };
 
+  // Fetch all available crops (1000+)
+  const fetchAllCrops = async () => {
+    try {
+      const res = await api.get('/crops/all');
+      if (res.data?.success) {
+        setAllCrops(res.data.data);
+        console.log(`✅ Loaded ${res.data.count} crops`);
+      }
+    } catch (err) {
+      console.error('Failed to fetch crops', err);
+    }
+  };
+
+  // Get crop recommendations based on property details
+  const getCropRecommendations = async () => {
+    try {
+      setLoadingRecommendations(true);
+      setShowRecommendations(true);
+
+      // Get center coordinates from polygon if available
+      let latitude = center.lat;
+      let longitude = center.lng;
+
+      if (polygon && polygon.length > 0) {
+        const lats = polygon.map(coord => coord[1]);
+        const lngs = polygon.map(coord => coord[0]);
+        latitude = (Math.min(...lats) + Math.max(...lats)) / 2;
+        longitude = (Math.min(...lngs) + Math.max(...lngs)) / 2;
+      }
+
+      const res = await api.post('/crops/recommend', {
+        soilType,
+        irrigationType,
+        latitude,
+        longitude
+      });
+
+      if (res.data?.success) {
+        setRecommendedCrops(res.data.data);
+        console.log('✅ Got crop recommendations:', res.data.data.topRecommendations.length);
+      }
+    } catch (err) {
+      console.error('Failed to get crop recommendations', err);
+    } finally {
+      setLoadingRecommendations(false);
+    }
+  };
+
   useEffect(() => {
     fetchProperties();
+    fetchAllCrops();
   }, []);
 
   useEffect(() => {
@@ -522,9 +578,18 @@ export default function Property() {
                   <input 
                     value={currentCrop} 
                     onChange={e => setCurrentCrop(e.target.value)} 
-                    className="input-field mb-4" 
+                    className="input-field mb-2" 
                     placeholder="e.g., Wheat, Rice, Cotton" 
+                    list="crop-suggestions"
                   />
+                  <datalist id="crop-suggestions">
+                    {allCrops.map((crop, index) => (
+                      <option key={index} value={crop} />
+                    ))}
+                  </datalist>
+                  <p className="text-xs text-gray-500 mb-4">
+                    💡 Choose from {allCrops.length}+ crops or type to search
+                  </p>
 
                   <label className="block mb-2 font-medium text-gray-700 flex items-center">
                     <FaMountain className="mr-2 text-amber-700" />
@@ -558,6 +623,154 @@ export default function Property() {
                     <option>Sprinkler</option>
                     <option>Other</option>
                   </select>
+
+                  {/* Crop Recommendation Button */}
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={getCropRecommendations}
+                    disabled={loadingRecommendations || !soilType || !irrigationType}
+                    className="w-full mb-4 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loadingRecommendations ? (
+                      <>
+                        <div className="spinner w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span>Getting Recommendations...</span>
+                      </>
+                    ) : (
+                      <>
+                        <FaLeaf />
+                        <span>🌾 Get Crop Recommendations (1000+ Crops)</span>
+                      </>
+                    )}
+                  </motion.button>
+
+                  {/* Crop Recommendations Display */}
+                  {showRecommendations && recommendedCrops && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      className="mb-4 p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-300 rounded-xl shadow-lg"
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-xl font-bold text-green-800 flex items-center">
+                          <span className="mr-2">🌾</span>
+                          Top Recommended Crops
+                        </h4>
+                        <button
+                          onClick={() => setShowRecommendations(false)}
+                          className="text-gray-500 hover:text-gray-700 text-xl"
+                        >
+                          ✕
+                        </button>
+                      </div>
+
+                      {/* Climate & Soil Info */}
+                      <div className="grid grid-cols-3 gap-3 mb-4">
+                        <div className="bg-white p-3 rounded-lg shadow text-center">
+                          <div className="text-2xl mb-1">🌡️</div>
+                          <div className="text-xs text-gray-600">Climate</div>
+                          <div className="font-bold text-green-700 capitalize">{recommendedCrops.climateZone}</div>
+                        </div>
+                        <div className="bg-white p-3 rounded-lg shadow text-center">
+                          <div className="text-2xl mb-1">🏔️</div>
+                          <div className="text-xs text-gray-600">Soil</div>
+                          <div className="font-bold text-amber-700">{recommendedCrops.soilType}</div>
+                        </div>
+                        <div className="bg-white p-3 rounded-lg shadow text-center">
+                          <div className="text-2xl mb-1">💧</div>
+                          <div className="text-xs text-gray-600">Irrigation</div>
+                          <div className="font-bold text-cyan-700">{recommendedCrops.irrigationType}</div>
+                        </div>
+                      </div>
+
+                      {/* Top 10 Recommendations */}
+                      <div className="bg-white rounded-lg p-4 shadow-md mb-4">
+                        <h5 className="font-bold text-green-700 mb-3">✨ Best Matches:</h5>
+                        <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
+                          {recommendedCrops.topRecommendations.slice(0, 20).map((rec, index) => (
+                            <motion.button
+                              key={index}
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => setCurrentCrop(rec.crop)}
+                              className={`p-3 rounded-lg border-2 text-left transition-all ${
+                                currentCrop === rec.crop
+                                  ? 'border-green-500 bg-green-100'
+                                  : 'border-gray-200 hover:border-green-300 bg-white'
+                              }`}
+                            >
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <div className="font-semibold text-sm">{rec.crop}</div>
+                                  <div className={`text-xs ${
+                                    rec.suitability === 'Excellent' ? 'text-green-600' :
+                                    rec.suitability === 'Good' ? 'text-blue-600' :
+                                    'text-yellow-600'
+                                  }`}>
+                                    {rec.suitability === 'Excellent' ? '⭐⭐⭐' :
+                                     rec.suitability === 'Good' ? '⭐⭐' : '⭐'}
+                                    {' '}{rec.suitability}
+                                  </div>
+                                </div>
+                                <div className="text-2xl">
+                                  {index < 3 ? '🏆' : index < 10 ? '🥇' : '✅'}
+                                </div>
+                              </div>
+                            </motion.button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Category-wise Recommendations */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-white rounded-lg p-3 shadow">
+                          <h6 className="font-bold text-xs text-gray-700 mb-2">🌾 Cereals</h6>
+                          <div className="space-y-1">
+                            {recommendedCrops.categoryRecommendations.cereals.slice(0, 3).map((rec, i) => (
+                              <div key={i} className="text-xs text-gray-600 cursor-pointer hover:text-green-600" onClick={() => setCurrentCrop(rec.crop)}>
+                                • {rec.crop}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="bg-white rounded-lg p-3 shadow">
+                          <h6 className="font-bold text-xs text-gray-700 mb-2">🥬 Vegetables</h6>
+                          <div className="space-y-1">
+                            {recommendedCrops.categoryRecommendations.vegetables.slice(0, 3).map((rec, i) => (
+                              <div key={i} className="text-xs text-gray-600 cursor-pointer hover:text-green-600" onClick={() => setCurrentCrop(rec.crop)}>
+                                • {rec.crop}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="bg-white rounded-lg p-3 shadow">
+                          <h6 className="font-bold text-xs text-gray-700 mb-2">🍎 Fruits</h6>
+                          <div className="space-y-1">
+                            {recommendedCrops.categoryRecommendations.fruits.slice(0, 3).map((rec, i) => (
+                              <div key={i} className="text-xs text-gray-600 cursor-pointer hover:text-green-600" onClick={() => setCurrentCrop(rec.crop)}>
+                                • {rec.crop}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="bg-white rounded-lg p-3 shadow">
+                          <h6 className="font-bold text-xs text-gray-700 mb-2">🌶️ Spices</h6>
+                          <div className="space-y-1">
+                            {recommendedCrops.categoryRecommendations.spices.slice(0, 3).map((rec, i) => (
+                              <div key={i} className="text-xs text-gray-600 cursor-pointer hover:text-green-600" onClick={() => setCurrentCrop(rec.crop)}>
+                                • {rec.crop}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 text-xs text-gray-600 text-center">
+                        Analyzed {recommendedCrops.totalAnalyzed} crops • Click any crop to select
+                      </div>
+                    </motion.div>
+                  )}
 
               <label className="block mb-2 font-medium text-gray-700">Property Papers (images/PDF, max 5)</label>
               <input type="file" multiple onChange={handleFiles} className="mb-4 text-sm" accept="image/*,.pdf" />
@@ -629,6 +842,9 @@ export default function Property() {
         </motion.div>
         </div>
       </div>
+      
+      {/* AI Chatbot */}
+      <AIChatbot />
       
       <Footer />
     </div>

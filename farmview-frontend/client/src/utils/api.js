@@ -12,8 +12,13 @@ const api = axios.create({
 // Request interceptor to add token
 api.interceptors.request.use(
   (config) => {
+    // Check for admin token first (for admin routes), then regular token
+    const adminToken = localStorage.getItem('adminToken');
     const token = localStorage.getItem('token');
-    if (token) {
+    
+    if (adminToken && config.url?.includes('/admin/')) {
+      config.headers.Authorization = `Bearer ${adminToken}`;
+    } else if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
@@ -28,9 +33,16 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('farmer');
-      window.location.href = '/login';
+      // Check if this is an admin route
+      if (error.config?.url?.includes('/admin/')) {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminData');
+        window.location.href = '/admin/login';
+      } else {
+        localStorage.removeItem('token');
+        localStorage.removeItem('farmer');
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

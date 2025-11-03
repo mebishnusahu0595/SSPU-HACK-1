@@ -3,9 +3,11 @@ import { useAuthStore } from '../store/authStore';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaFileAlt, FaMapMarkedAlt, FaShieldAlt, FaCloudSun, FaTrophy, FaCheckCircle } from 'react-icons/fa';
+import { FaFileAlt, FaMapMarkedAlt, FaShieldAlt, FaCloudSun, FaTrophy, FaCheckCircle, FaClock } from 'react-icons/fa';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import AIChatbot from '../components/AIChatbot';
+import FarmTodo from '../components/FarmTodo';
 import api from '../utils/api';
 
 export default function Dashboard() {
@@ -16,10 +18,12 @@ export default function Dashboard() {
     insurance: 0,
     documents: 0
   });
+  const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchDashboardData();
+    fetchRecentActivities();
   }, []);
 
   const fetchDashboardData = async () => {
@@ -39,6 +43,17 @@ export default function Dashboard() {
       console.error('Dashboard data fetch error:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchRecentActivities = async () => {
+    try {
+      const response = await api.get('/activity?limit=5');
+      if (response.data?.success) {
+        setActivities(response.data.data);
+      }
+    } catch (error) {
+      console.error('Fetch activities error:', error);
     }
   };
 
@@ -70,6 +85,13 @@ export default function Dashboard() {
       path: '/weather', 
       color: 'from-yellow-500 to-yellow-600',
       description: 'Weather forecast'
+    },
+    { 
+      icon: <span className="text-4xl">🌾</span>, 
+      title: 'Crop Intelligence', 
+      path: '/crop-intelligence', 
+      color: 'from-teal-500 to-teal-600',
+      description: 'AI-powered crop analysis'
     },
   ];
 
@@ -194,12 +216,38 @@ export default function Dashboard() {
               <h3 className="text-2xl font-bold text-gray-800">
                 {t('dashboard.recentActivity')}
               </h3>
-              <FaCheckCircle className="text-green-500 text-2xl" />
+              <FaClock className="text-blue-500 text-2xl" />
             </div>
             
             {loading ? (
               <div className="flex justify-center py-8">
                 <div className="spinner w-8 h-8" />
+              </div>
+            ) : activities.length > 0 ? (
+              <div className="space-y-4">
+                {activities.map((activity, index) => (
+                  <motion.div
+                    key={activity._id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all"
+                  >
+                    <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-xl">
+                      {activity.icon}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-gray-800">{activity.title}</h4>
+                      {activity.description && (
+                        <p className="text-sm text-gray-600 mt-1">{activity.description}</p>
+                      )}
+                      <p className="text-xs text-gray-500 mt-2 flex items-center space-x-1">
+                        <FaClock className="text-xs" />
+                        <span>{new Date(activity.createdAt).toLocaleString()}</span>
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
             ) : (
               <div className="text-center py-12">
@@ -213,6 +261,12 @@ export default function Dashboard() {
           </motion.div>
         </div>
       </div>
+
+      {/* Farm Todo */}
+      <FarmTodo />
+
+      {/* AI Chatbot */}
+      <AIChatbot />
 
       <Footer />
     </div>

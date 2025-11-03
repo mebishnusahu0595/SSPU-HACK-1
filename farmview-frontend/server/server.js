@@ -57,6 +57,10 @@ const satelliteRoutes = require('./routes/satellite.routes');
 const claimRoutes = require('./routes/claim.routes');
 const aiRoutes = require('./routes/ai.routes');
 const adminRoutes = require('./routes/admin.routes');
+const geoaiRoutes = require('./routes/geoai.routes');
+const cropRoutes = require('./routes/crop.routes');
+const todoRoutes = require('./routes/todo.routes');
+const activityRoutes = require('./routes/activity.routes');
 
 // Import Services
 const weatherAlertService = require('./services/weatherAlertService');
@@ -74,6 +78,10 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/alerts', alertsRoutes);
 app.use('/api/satellite', satelliteRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/geoai', geoaiRoutes);
+app.use('/api/crops', cropRoutes);
+app.use('/api/todos', todoRoutes);
+app.use('/api/activity', activityRoutes);
 
 // Health Check
 app.get('/health', (req, res) => {
@@ -93,7 +101,8 @@ app.get('/', (req, res) => {
       ml: 'Advanced ML-based Crop Damage Prediction',
       weather: 'Real-time Weather Monitoring',
       alerts: 'Automated Weather Alerts System',
-      satellite: 'Sentinel Hub Satellite Imagery & NDVI'
+      satellite: 'Sentinel Hub Satellite Imagery & NDVI',
+      geoai: 'Gemini AI-powered Crop Intelligence & Recommendations'
     },
     endpoints: {
       auth: '/api/auth',
@@ -104,7 +113,8 @@ app.get('/', (req, res) => {
       digilocker: '/api/digilocker',
       property: '/api/property',
       alerts: '/api/alerts',
-      satellite: '/api/satellite'
+      satellite: '/api/satellite',
+      geoai: '/api/geoai'
     }
   });
 });

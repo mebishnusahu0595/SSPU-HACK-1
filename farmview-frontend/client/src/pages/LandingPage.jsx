@@ -4,8 +4,10 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { Link } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function LandingPage() {
+  const { t } = useTranslation();
   const [counters, setCounters] = useState({
     farmers: 0,
     hectares: 0,
@@ -84,43 +86,43 @@ export default function LandingPage() {
   const features = [
     {
       icon: <FaMapMarkedAlt className="text-5xl text-primary-600" />,
-      title: 'Property Management',
-      description: 'Draw and manage your farm boundaries on interactive maps'
+      title: t('landing.features.property.title'),
+      description: t('landing.features.property.desc')
     },
     {
       icon: <FaFileAlt className="text-5xl text-primary-600" />,
-      title: 'Document Management',
-      description: 'Securely store and manage all your farm documents'
+      title: t('landing.features.documents.title'),
+      description: t('landing.features.documents.desc')
     },
     {
       icon: <FaShieldAlt className="text-5xl text-primary-600" />,
-      title: 'Insurance Integration',
-      description: 'Manage policies and submit claims easily'
+      title: t('landing.features.insurance.title'),
+      description: t('landing.features.insurance.desc')
     },
     {
       icon: <FaCloudSun className="text-5xl text-primary-600" />,
-      title: 'Weather Forecasts',
-      description: 'Get real-time weather updates for your location'
+      title: t('landing.features.weather.title'),
+      description: t('landing.features.weather.desc')
     },
     {
       icon: <FaChartLine className="text-5xl text-primary-600" />,
-      title: 'Crop Monitoring',
-      description: 'Satellite-based crop health analysis'
+      title: t('landing.features.monitoring.title'),
+      description: t('landing.features.monitoring.desc')
     },
     {
       icon: <FaSeedling className="text-5xl text-primary-600" />,
-      title: 'Smart Farming',
-      description: 'AI-powered insights for better yields'
+      title: t('landing.features.smart.title'),
+      description: t('landing.features.smart.desc')
     }
   ];
 
   const benefits = [
-    'Real-time satellite monitoring of your crops',
-    'Automated insurance claim processing',
-    'Weather forecasts tailored to your location',
-    'Secure document management system',
-    'Multi-language support for farmers',
-    'AI-powered crop health analysis'
+    t('landing.benefits.satellite'),
+    t('landing.benefits.claims'),
+    t('landing.benefits.weather'),
+    t('landing.benefits.documents'),
+    t('landing.benefits.multilang'),
+    t('landing.benefits.ai')
   ];
 
   return (
@@ -142,20 +144,19 @@ export default function LandingPage() {
             className="mb-6"
           >
             <span className="inline-block px-4 py-2 bg-primary-100 text-primary-700 rounded-full text-sm font-semibold">
-              🚀 Now with GeoAI Insurance Claims
+              🚀 {t('landing.geoaiBadge')}
             </span>
           </motion.div>
           
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-gray-800 mb-6 leading-tight">
-            Smart Farming with{' '}
+            {t('landing.heroTitle')}{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-secondary-600">
-              AI Technology
+              {t('landing.heroTitleHighlight')}
             </span>
           </h1>
           
           <p className="text-lg md:text-xl lg:text-2xl text-gray-600 mb-10 leading-relaxed max-w-3xl mx-auto">
-            Satellite-based crop monitoring, automated insurance claims with GeoAI verification, 
-            and complete farm management in one powerful platform
+            {t('landing.heroSubtitle')}
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
@@ -163,13 +164,13 @@ export default function LandingPage() {
               to="/signup" 
               className="w-full sm:w-auto btn-primary text-lg px-10 py-4 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all"
             >
-              Get Started Free
+              {t('landing.getStartedFree')}
             </Link>
             <Link 
               to="/login" 
               className="w-full sm:w-auto btn-outline text-lg px-10 py-4"
             >
-              Login to Dashboard
+              {t('landing.loginToDashboard')}
             </Link>
           </div>
 
@@ -205,7 +206,7 @@ export default function LandingPage() {
               <h3 className="text-3xl md:text-4xl font-bold text-primary-600 mb-2">
                 {formatNumber(counters.farmers, 'farmers')}
               </h3>
-              <p className="text-gray-600 text-sm md:text-base">Farmers Registered</p>
+              <p className="text-gray-600 text-sm md:text-base">{t('landing.stats.farmers')}</p>
             </motion.div>
 
             <motion.div
@@ -218,7 +219,7 @@ export default function LandingPage() {
               <h3 className="text-3xl md:text-4xl font-bold text-primary-600 mb-2">
                 {formatNumber(counters.hectares, 'hectares')}
               </h3>
-              <p className="text-gray-600 text-sm md:text-base">Hectares Monitored</p>
+              <p className="text-gray-600 text-sm md:text-base">{t('landing.stats.hectares')}</p>
             </motion.div>
 
             <motion.div
@@ -231,7 +232,7 @@ export default function LandingPage() {
               <h3 className="text-3xl md:text-4xl font-bold text-primary-600 mb-2">
                 {formatNumber(counters.claims, 'claims')}
               </h3>
-              <p className="text-gray-600 text-sm md:text-base">Claims Processed</p>
+              <p className="text-gray-600 text-sm md:text-base">{t('landing.stats.claims')}</p>
             </motion.div>
 
             <motion.div
@@ -244,7 +245,7 @@ export default function LandingPage() {
               <h3 className="text-3xl md:text-4xl font-bold text-primary-600 mb-2">
                 {formatNumber(counters.uptime, 'uptime')}
               </h3>
-              <p className="text-gray-600 text-sm md:text-base">Uptime Guarantee</p>
+              <p className="text-gray-600 text-sm md:text-base">{t('landing.stats.uptime')}</p>
             </motion.div>
           </div>
         </div>
@@ -259,10 +260,10 @@ export default function LandingPage() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
-            Everything You Need to Succeed
+            {t('landing.features.title')}
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Comprehensive tools designed specifically for modern Indian farmers
+            {t('landing.features.subtitle')}
           </p>
         </motion.div>
 
@@ -305,24 +306,23 @@ export default function LandingPage() {
             transition={{ duration: 0.6 }}
           >
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Ready to Transform Your Farm?
+              {t('landing.cta.title')}
             </h2>
             <p className="text-xl md:text-2xl text-primary-100 mb-10 max-w-2xl mx-auto">
-              Join thousands of farmers already using FarmView AI to increase yields 
-              and protect their investments
+              {t('landing.cta.subtitle')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
                 to="/signup" 
                 className="bg-white text-primary-600 hover:bg-primary-50 font-bold py-4 px-10 rounded-lg text-lg transition-all shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
               >
-                Create Free Account
+                {t('landing.cta.createAccount')}
               </Link>
               <a 
                 href="#features"
                 className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-600 font-bold py-4 px-10 rounded-lg text-lg transition-all"
               >
-                Learn More
+                {t('landing.cta.learnMore')}
               </a>
             </div>
           </motion.div>
