@@ -1,0 +1,19 @@
+{
+  "name": "farmview-ai",
+  "version": "1.0.0",
+  "description": "FarmView AI - Complete Full-Stack Platform",
+  "scripts": {
+    "install-all": "npm install && cd server && npm install && cd ../client && npm install",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm run dev",
+    "start": "cd server && npm start",
+    "build": "cd client && npm run build"
+  },
+  "keywords": ["farmview", "agriculture", "fullstack"],
+  "author": "SSPU Hackathon 2025",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
