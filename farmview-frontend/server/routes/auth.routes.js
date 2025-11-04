@@ -5,6 +5,7 @@ const multer = require('multer');
 const mongoose = require('mongoose');
 const Farmer = require('../models/Farmer.model');
 const { generateToken, protect } = require('../middleware/auth.middleware');
+const { verifyRecaptcha } = require('../middleware/recaptcha.middleware');
 
 // Initialize GridFS for profile pictures
 let gridfsBucket;
@@ -38,12 +39,15 @@ const upload = multer({
 // @route   POST /api/auth/signup
 // @desc    Register a new farmer
 // @access  Public
-router.post('/signup', [
-  body('name').trim().notEmpty().withMessage('Name is required'),
-  body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
-  body('mobile').matches(/^[0-9]{10}$/).withMessage('Valid 10-digit mobile number is required'),
-  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
-], async (req, res) => {
+router.post('/signup', 
+  verifyRecaptcha,
+  [
+    body('name').trim().notEmpty().withMessage('Name is required'),
+    body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
+    body('mobile').matches(/^[0-9]{10}$/).withMessage('Valid 10-digit mobile number is required'),
+    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
+  ], 
+  async (req, res) => {
   try {
     // Validate input
     const errors = validationResult(req);
@@ -114,10 +118,13 @@ router.post('/signup', [
 // @route   POST /api/auth/login
 // @desc    Login farmer
 // @access  Public
-router.post('/login', [
-  body('identifier').notEmpty().withMessage('Email or mobile number is required'),
-  body('password').notEmpty().withMessage('Password is required')
-], async (req, res) => {
+router.post('/login', 
+  verifyRecaptcha,
+  [
+    body('identifier').notEmpty().withMessage('Email or mobile number is required'),
+    body('password').notEmpty().withMessage('Password is required')
+  ], 
+  async (req, res) => {
   try {
     // Validate input
     const errors = validationResult(req);

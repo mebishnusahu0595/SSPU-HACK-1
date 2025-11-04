@@ -112,18 +112,22 @@ router.get('/', protect, async (req, res) => {
 // @access  Private
 router.get('/:id', protect, async (req, res) => {
   try {
+    console.log('📋 Fetching insurance details:', req.params.id, 'for farmer:', req.farmer._id);
+    
     const insurance = await Insurance.findOne({
       _id: req.params.id,
       farmer: req.farmer._id
     }).populate('property', 'propertyName area address');
 
     if (!insurance) {
+      console.log('❌ Insurance not found');
       return res.status(404).json({
         success: false,
         message: 'Insurance policy not found'
       });
     }
 
+    console.log('✅ Insurance found:', insurance.policyNumber);
     res.status(200).json({
       success: true,
       data: insurance
@@ -143,6 +147,9 @@ router.get('/:id', protect, async (req, res) => {
 // @access  Private
 router.post('/:id/claim', protect, async (req, res) => {
   try {
+    console.log('📋 Filing claim for insurance:', req.params.id);
+    console.log('📋 Claim data:', req.body);
+    
     const {
       damageType,
       damageDescription,
@@ -152,6 +159,7 @@ router.post('/:id/claim', protect, async (req, res) => {
     } = req.body;
 
     if (!damageType || !damageDescription || !claimAmount) {
+      console.log('❌ Missing required fields');
       return res.status(400).json({
         success: false,
         message: 'Required fields: damageType, damageDescription, claimAmount'
@@ -164,6 +172,7 @@ router.post('/:id/claim', protect, async (req, res) => {
     });
 
     if (!insurance) {
+      console.log('❌ Insurance not found');
       return res.status(404).json({
         success: false,
         message: 'Insurance policy not found'
@@ -171,6 +180,7 @@ router.post('/:id/claim', protect, async (req, res) => {
     }
 
     if (insurance.status !== 'Active') {
+      console.log('❌ Policy not active');
       return res.status(400).json({
         success: false,
         message: 'Cannot submit claim for inactive policy'
@@ -193,6 +203,7 @@ router.post('/:id/claim', protect, async (req, res) => {
     insurance.claims.push(claim);
     await insurance.save();
 
+    console.log('✅ Claim filed successfully:', claimNumber);
     res.status(201).json({
       success: true,
       message: 'Insurance claim submitted successfully',

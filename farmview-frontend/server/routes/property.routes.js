@@ -362,4 +362,149 @@ router.delete('/:id', protect, async (req, res) => {
   }
 });
 
+// @route   POST /api/property/:id/verify-ai
+// @desc    ADVANCED ML Property Verification - Ensemble Learning with Deep Validation
+// @access  Private
+router.post('/:id/verify-ai', protect, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate ObjectId format
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid property ID format'
+      });
+    }
+
+    // Find property - use 'farmer' field (ObjectId) not 'farmerId' (String)
+    const property = await Property.findOne({ 
+      _id: id, 
+      farmer: req.farmer._id 
+    });
+
+    if (!property) {
+      return res.status(404).json({
+        success: false,
+        message: 'Property not found or access denied'
+      });
+    }
+
+    console.log(`\n🚀 ==========================================`);
+    console.log(`   ADVANCED ML VERIFICATION INITIATED`);
+    console.log(`   Property: ${property.propertyName}`);
+    console.log(`   Property ID: ${id}`);
+    console.log(`   Farmer: ${req.farmer.name || req.farmer.email}`);
+    console.log(`==========================================\n`);
+
+    // Import Advanced ML Verification System
+    const AdvancedMLVerification = require('../ml/advancedPropertyVerification');
+
+    // Perform Ensemble ML Verification
+    const mlResult = await AdvancedMLVerification.performEnsembleVerification(property);
+
+    if (!mlResult.success) {
+      return res.status(500).json({
+        success: false,
+        message: 'ML verification failed',
+        error: mlResult.error
+      });
+    }
+
+    // Update property with ML results
+    property.isVerified = mlResult.isVerified;
+    property.verificationScore = mlResult.verificationScore;
+    property.verificationLevel = mlResult.verificationLevel;
+    property.mlConfidence = mlResult.confidence;
+    property.verificationDetails = mlResult.insights;
+    property.verifiedAt = mlResult.isVerified ? new Date() : null;
+
+    await property.save();
+
+    // Log activity
+    await Activity.create({
+      farmer: req.farmer._id,
+      type: 'document_verified',
+      title: `Property Verified: ${property.propertyName}`,
+      description: `Advanced ML verification completed with ${mlResult.verificationLevel} level (${mlResult.verificationScore.toFixed(1)}% score)`,
+      metadata: {
+        propertyId: property._id,
+        score: mlResult.verificationScore,
+        confidence: mlResult.confidence,
+        status: mlResult.status,
+        level: mlResult.verificationLevel,
+        processingTime: mlResult.processingTime
+      },
+      icon: mlResult.verificationLevel === 'GOLD' ? '🥇' : 
+            mlResult.verificationLevel === 'SILVER' ? '🥈' : 
+            mlResult.verificationLevel === 'BRONZE' ? '🥉' : '⏳'
+    });
+
+    console.log(`\n✅ ==========================================`);
+    console.log(`   ML VERIFICATION COMPLETED`);
+    console.log(`   Status: ${mlResult.status}`);
+    console.log(`   Score: ${mlResult.verificationScore.toFixed(2)}/100`);
+    console.log(`   Confidence: ${mlResult.confidence.toFixed(2)}%`);
+    console.log(`   Level: ${mlResult.verificationLevel}`);
+    console.log(`   Processing Time: ${mlResult.processingTime}`);
+    console.log(`==========================================\n`);
+
+    res.json({
+      success: true,
+      message: 'Advanced ML verification completed',
+      data: {
+        property: {
+          _id: property._id,
+          propertyName: property.propertyName,
+          isVerified: property.isVerified,
+          verificationScore: property.verificationScore,
+          verificationLevel: property.verificationLevel,
+          mlConfidence: property.mlConfidence,
+          verifiedAt: property.verifiedAt
+        },
+        mlAnalysis: {
+          overallScore: mlResult.verificationScore,
+          confidence: mlResult.confidence,
+          status: mlResult.status,
+          verificationLevel: mlResult.verificationLevel,
+          isVerified: mlResult.isVerified,
+          processingTime: mlResult.processingTime,
+          layerScores: {
+            coordinates: mlResult.layerResults.coordinates.score,
+            boundary: mlResult.layerResults.boundary.score,
+            documents: mlResult.layerResults.documents.score,
+            satellite: mlResult.layerResults.satellite.score,
+            completeness: mlResult.layerResults.completeness.score
+          },
+          layerConfidence: {
+            coordinates: mlResult.layerResults.coordinates.confidence,
+            boundary: mlResult.layerResults.boundary.confidence,
+            documents: mlResult.layerResults.documents.confidence,
+            satellite: mlResult.layerResults.satellite.confidence,
+            completeness: mlResult.layerResults.completeness.confidence
+          }
+        },
+        insights: mlResult.insights,
+        recommendation: mlResult.recommendation,
+        nextSteps: mlResult.nextSteps,
+        detailedAnalysis: {
+          coordinates: mlResult.layerResults.coordinates.details,
+          boundary: mlResult.layerResults.boundary.details,
+          documents: mlResult.layerResults.documents.details,
+          satellite: mlResult.layerResults.satellite.details,
+          completeness: mlResult.layerResults.completeness.details
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ ML Verification Error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Advanced ML verification failed',
+      error: error.message
+    });
+  }
+});
+
 module.exports = router;

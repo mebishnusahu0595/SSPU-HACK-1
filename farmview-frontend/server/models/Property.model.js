@@ -68,6 +68,18 @@ const propertySchema = new mongoose.Schema({
     }
   },
   
+  // Boundary Polygon (for ML verification)
+  boundary: {
+    type: {
+      type: String,
+      enum: ['Polygon'],
+      default: 'Polygon'
+    },
+    coordinates: {
+      type: [[[Number]]] // Array of coordinate arrays for polygon
+    }
+  },
+  
   // Soil and Crop Information
   soilType: {
     type: String,
@@ -102,10 +114,25 @@ const propertySchema = new mongoose.Schema({
   verificationDate: Date,
   verificationMethod: {
     type: String,
-    enum: ['manual', 'ocr-ai', 'digilocker', 'government-api'],
+    enum: ['manual', 'ocr-ai', 'digilocker', 'government-api', 'ai-satellite', 'advanced-ml'],
     default: 'manual'
   },
   verificationScore: Number,
+  
+  // Advanced ML Verification Fields
+  verificationLevel: {
+    type: String,
+    enum: ['GOLD', 'SILVER', 'BRONZE', 'PENDING'],
+    default: 'PENDING'
+  },
+  mlConfidence: {
+    type: Number,
+    min: 0,
+    max: 100
+  },
+  verificationDetails: [String],
+  verifiedAt: Date,
+  
   documentVerificationStatus: {
     type: String,
     enum: ['pending', 'verified', 'rejected', 'review'],

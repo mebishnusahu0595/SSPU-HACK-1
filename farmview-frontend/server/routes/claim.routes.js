@@ -7,6 +7,7 @@ const express = require('express');
 const router = express.Router();
 const { protect } = require('../middleware/auth.middleware');
 const insuranceClaimService = require('../services/insuranceClaimService');
+const Insurance = require('../models/Insurance.model');
 
 /**
  * @route   GET /api/claims/test
@@ -33,35 +34,57 @@ router.get('/test', (req, res) => {
  */
 router.get('/', protect, async (req, res) => {
   try {
-  
-    const mockClaims = [
-      {
-        _id: '1',
-        claimId: 'CLM-2025-001',
-        status: 'approved',
-        damageScore: 65,
-        estimatedPayout: 45000,
-        processingTime: '42 seconds',
-        severity: 'HIGH',
-        reason: 'flood',
-        description: 'Heavy rainfall caused waterlogging',
-        createdAt: new Date('2025-11-01'),
-        property: {
-          propertyName: 'Farm A',
-          currentCrop: 'Wheat',
-          area: 2.5
-        },
-        evidence: {
-          historicalNDVI: '0.78',
-          currentNDVI: '0.35'
-        }
+    console.log('📋 Fetching claims for farmer:', req.farmer._id);
+    
+    // Fetch insurance policies with claims for the logged-in farmer
+    const insurancePolicies = await Insurance.find({ farmer: req.farmer._id })
+      .populate('property', 'propertyName currentCrop area surveyNumber')
+      .sort({ createdAt: -1 });
+
+    console.log(`📋 Found ${insurancePolicies.length} insurance policies`);
+
+    // Extract all claims from all policies and flatten the array
+    let allClaims = [];
+    insurancePolicies.forEach(policy => {
+      if (policy.claims && policy.claims.length > 0) {
+        policy.claims.forEach(claim => {
+          // Add property info to each claim
+          allClaims.push({
+            _id: claim._id,
+            claimId: claim.claimNumber,
+            status: claim.status?.toLowerCase().replace(' ', '_'),
+            damageScore: claim.damageScore,
+            estimatedPayout: claim.claimAmount || claim.estimatedLoss,
+            processingTime: claim.processingTime,
+            severity: claim.severity,
+            reason: claim.damageType?.toLowerCase(),
+            description: claim.damageDescription,
+            createdAt: claim.claimDate,
+            property: {
+              propertyName: policy.property?.propertyName || 'N/A',
+              currentCrop: policy.property?.currentCrop || 'N/A',
+              area: policy.property?.area || 0
+            },
+            evidence: claim.evidence || {}
+          });
+        });
       }
-    ];
+    });
+
+    // Filter to show only claims with GeoAI verification (real NDVI data)
+    const verifiedClaims = allClaims.filter(claim => 
+      claim.damageScore !== undefined && 
+      claim.damageScore !== null &&
+      (claim.evidence?.currentNDVI || claim.evidence?.historicalNDVI)
+    );
 
     res.status(200).json({
       success: true,
-      data: mockClaims,
-      message: 'Claims fetched successfully'
+      data: verifiedClaims,
+      count: verifiedClaims.length,
+      message: verifiedClaims.length > 0 
+        ? `${verifiedClaims.length} GeoAI verified claim(s) found` 
+        : 'No GeoAI verified claims found. Submit a claim with satellite data verification to see results here.'
     });
 
   } catch (error) {
