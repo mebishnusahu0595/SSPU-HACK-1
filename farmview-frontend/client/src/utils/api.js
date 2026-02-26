@@ -15,7 +15,7 @@ api.interceptors.request.use(
     // Check for admin token first (for admin routes), then regular token
     const adminToken = localStorage.getItem('adminToken');
     const token = localStorage.getItem('token');
-    
+
     if (adminToken && config.url?.includes('/admin/')) {
       config.headers.Authorization = `Bearer ${adminToken}`;
     } else if (token) {
