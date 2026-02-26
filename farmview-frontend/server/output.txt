@@ -1,0 +1,70 @@
+node : node:internal/modules/
+cjs/loader:1424
+At line:1 char:1
++ node server.js 2>&1 | 
+Out-File -Encoding ascii 
+output.txt; type outpu ...
++ ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo           
+   : NotSpecified: (node:in  
+  ternal/modules/cjs/loade   
+ r:1424:String) [], Remot    
+eException
+    + FullyQualifiedErrorId  
+   : NativeCommandError
+ 
+  throw err;
+  ^
+
+Error: Cannot find module 
+'./lib/express'
+Require stack:
+- D:\SSPU-HACK-1\farmview-fro
+ntend\server\node_modules\exp
+ress\index.js
+- D:\SSPU-HACK-1\farmview-fro
+ntend\server\server.js
+    at 
+Module._resolveFilename (node
+:internal/modules/cjs/loader:
+1421:15)
+    at defaultResolveImpl (no
+de:internal/modules/cjs/loade
+r:1059:19)
+    at 
+resolveForCJSWithHooks (node:
+internal/modules/cjs/loader:1
+064:22)
+    at Module._load (node:int
+ernal/modules/cjs/loader:1227
+:37)
+    at 
+TracingChannel.traceSync (nod
+e:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:i
+nternal/modules/cjs/loader:24
+5:24)
+    at Module.require (node:i
+nternal/modules/cjs/loader:15
+04:12)
+    at require (node:internal
+/modules/helpers:152:16)
+    at Object.<anonymous> (D:
+\SSPU-HACK-1\farmview-fronten
+d\server\node_modules\express
+\index.js:11:18)
+    at Module._compile (node:
+internal/modules/cjs/loader:1
+761:14) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'D:\\SSPU-HACK-1\\farmvie
+w-frontend\\server\\node_modu
+les\\express\\index.js',
+    'D:\\SSPU-HACK-1\\farmvie
+w-frontend\\server\\server.js
+'
+  ]
+}
+
+Node.js v24.11.1

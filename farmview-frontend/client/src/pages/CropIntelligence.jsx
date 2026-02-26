@@ -14,7 +14,7 @@ const CropIntelligence = () => {
   const [loadingProperties, setLoadingProperties] = useState(false);
   const [error, setError] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
-  
+
   // Results
   const [analysis, setAnalysis] = useState(null);
   const [identification, setIdentification] = useState(null);
@@ -29,31 +29,31 @@ const CropIntelligence = () => {
       console.log('Already initialized, skipping fetch');
       return;
     }
-    
+
     const fetchProperties = async () => {
       console.log('Starting to fetch properties - ONCE ONLY');
       setLoadingProperties(true);
-      
+
       try {
         const token = localStorage.getItem('token');
-        
+
         if (!token) {
           console.log('No token found, redirecting to login');
           navigate('/login', { replace: true });
           return;
         }
-        
+
         const response = await axios.get('http://localhost:5000/api/property', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        
+
         const propertiesData = response.data.data || [];
         setProperties(propertiesData);
-        
+
         if (propertiesData.length > 0) {
           setSelectedProperty(propertiesData[0]);
         }
-        
+
         console.log('Properties loaded successfully:', propertiesData.length);
         setIsInitialized(true);
       } catch (err) {
@@ -64,15 +64,15 @@ const CropIntelligence = () => {
         setLoadingProperties(false);
       }
     };
-    
+
     fetchProperties();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Analyze Crop
   const handleAnalyzeCrop = async () => {
     if (!selectedProperty) return;
-    
+
     setLoading(true);
     setError(null);
 
@@ -91,7 +91,7 @@ const CropIntelligence = () => {
   // Identify Crop
   const handleIdentifyCrop = async () => {
     if (!selectedProperty) return;
-    
+
     setLoading(true);
     setError(null);
 
@@ -111,7 +111,7 @@ const CropIntelligence = () => {
   // Recommend Next Crop
   const handleRecommendCrop = async () => {
     if (!selectedProperty) return;
-    
+
     setLoading(true);
     setError(null);
 
@@ -131,7 +131,7 @@ const CropIntelligence = () => {
   // Detect Issues
   const handleDetectIssues = async () => {
     if (!selectedProperty) return;
-    
+
     setLoading(true);
     setError(null);
 
@@ -152,7 +152,7 @@ const CropIntelligence = () => {
   // Predict Yield
   const handlePredictYield = async () => {
     if (!selectedProperty) return;
-    
+
     setLoading(true);
     setError(null);
 
@@ -173,7 +173,7 @@ const CropIntelligence = () => {
   // Get NDVI Stats
   const handleGetNDVI = async () => {
     if (!selectedProperty) return;
-    
+
     setLoading(true);
     setError(null);
 
@@ -190,7 +190,7 @@ const CropIntelligence = () => {
   // Loading state
   console.log('Current loadingProperties state:', loadingProperties);
   console.log('Properties array:', properties);
-  
+
   // TEMPORARILY DISABLED LOADING CHECK FOR DEBUGGING
   // if (loadingProperties) {
   //   console.log('Showing loading screen');
@@ -239,8 +239,8 @@ const CropIntelligence = () => {
   console.log('Selected property:', selectedProperty);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-6" style={{ 
-      minHeight: '100vh', 
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-6" style={{
+      minHeight: '100vh',
       backgroundColor: '#f0fdf4',
       padding: '24px',
       position: 'relative',
@@ -261,7 +261,7 @@ const CropIntelligence = () => {
       }}>
         🚨 TEST: IF YOU SEE THIS, COMPONENT IS RENDERING! Properties: {properties.length}
       </div>
-      
+
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6" style={{ backgroundColor: 'white', marginTop: '80px' }}>
@@ -312,7 +312,7 @@ const CropIntelligence = () => {
             )}
             {properties.map(prop => (
               <option key={prop._id} value={prop._id}>
-                {prop.propertyName || prop.surveyNumber} - {prop.area} hectares - {prop.currentCrop || 'No crop'}
+                {prop.propertyName || prop.surveyNumber} - {prop.area?.value || prop.area} {prop.area?.unit || 'hectares'} - {prop.currentCrop || 'No crop'}
               </option>
             ))}
           </select>
@@ -332,11 +332,10 @@ const CropIntelligence = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 min-w-[120px] px-4 py-4 font-medium transition ${
-                  activeTab === tab.id
+                className={`flex-1 min-w-[120px] px-4 py-4 font-medium transition ${activeTab === tab.id
                     ? 'border-b-4 border-green-500 text-green-600'
                     : 'text-gray-600 hover:text-green-600'
-                }`}
+                  }`}
               >
                 <span className="text-xl mr-2">{tab.icon}</span>
                 {tab.label}
@@ -420,11 +419,10 @@ const CropIntelligence = () => {
                             <div key={i} className="bg-white p-4 rounded-lg border border-yellow-300">
                               <div className="flex justify-between items-start mb-2">
                                 <h4 className="font-bold text-gray-800">{issue.issue}</h4>
-                                <span className={`px-3 py-1 rounded-full text-sm ${
-                                  issue.severity === 'High' ? 'bg-red-100 text-red-700' :
-                                  issue.severity === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
-                                  'bg-green-100 text-green-700'
-                                }`}>
+                                <span className={`px-3 py-1 rounded-full text-sm ${issue.severity === 'High' ? 'bg-red-100 text-red-700' :
+                                    issue.severity === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
+                                      'bg-green-100 text-green-700'
+                                  }`}>
                                   {issue.severity}
                                 </span>
                               </div>
@@ -494,7 +492,7 @@ const CropIntelligence = () => {
                           {identification.confidence}% Sure
                         </span>
                       </div>
-                      
+
                       <div className="bg-white p-6 rounded-lg mt-4">
                         <h4 className="font-bold text-gray-800 mb-2">📝 Why This Crop?</h4>
                         <p className="text-gray-700">{identification.reasoning}</p>
@@ -654,11 +652,10 @@ const CropIntelligence = () => {
                 {issues && (
                   <div className="space-y-6">
                     {/* Health Status */}
-                    <div className={`border-2 rounded-xl p-6 ${
-                      issues.healthStatus === 'Healthy' ? 'bg-green-50 border-green-300' :
-                      issues.healthStatus === 'At Risk' ? 'bg-yellow-50 border-yellow-300' :
-                      'bg-red-50 border-red-300'
-                    }`}>
+                    <div className={`border-2 rounded-xl p-6 ${issues.healthStatus === 'Healthy' ? 'bg-green-50 border-green-300' :
+                        issues.healthStatus === 'At Risk' ? 'bg-yellow-50 border-yellow-300' :
+                          'bg-red-50 border-red-300'
+                      }`}>
                       <div className="flex justify-between items-center">
                         <div>
                           <h3 className="text-2xl font-bold text-gray-800 mb-2">
@@ -671,7 +668,7 @@ const CropIntelligence = () => {
                         </div>
                         <div className="text-6xl">
                           {issues.healthStatus === 'Healthy' ? '✅' :
-                           issues.healthStatus === 'At Risk' ? '⚠️' : '🚨'}
+                            issues.healthStatus === 'At Risk' ? '⚠️' : '🚨'}
                         </div>
                       </div>
                     </div>
@@ -681,21 +678,19 @@ const CropIntelligence = () => {
                       <div className="space-y-4">
                         <h3 className="text-xl font-bold text-gray-800">🔬 Detected Issues</h3>
                         {issues.detectedIssues.map((issue, i) => (
-                          <div key={i} className={`border-l-4 rounded-lg p-6 ${
-                            issue.severity === 'Critical' ? 'bg-red-50 border-red-500' :
-                            issue.severity === 'High' ? 'bg-orange-50 border-orange-500' :
-                            issue.severity === 'Medium' ? 'bg-yellow-50 border-yellow-500' :
-                            'bg-green-50 border-green-500'
-                          }`}>
+                          <div key={i} className={`border-l-4 rounded-lg p-6 ${issue.severity === 'Critical' ? 'bg-red-50 border-red-500' :
+                              issue.severity === 'High' ? 'bg-orange-50 border-orange-500' :
+                                issue.severity === 'Medium' ? 'bg-yellow-50 border-yellow-500' :
+                                  'bg-green-50 border-green-500'
+                            }`}>
                             <div className="flex justify-between items-start mb-3">
                               <h4 className="text-xl font-bold text-gray-800">{issue.type}</h4>
                               <div className="flex gap-2">
-                                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                                  issue.severity === 'Critical' ? 'bg-red-200 text-red-800' :
-                                  issue.severity === 'High' ? 'bg-orange-200 text-orange-800' :
-                                  issue.severity === 'Medium' ? 'bg-yellow-200 text-yellow-800' :
-                                  'bg-green-200 text-green-800'
-                                }`}>
+                                <span className={`px-3 py-1 rounded-full text-sm font-medium ${issue.severity === 'Critical' ? 'bg-red-200 text-red-800' :
+                                    issue.severity === 'High' ? 'bg-orange-200 text-orange-800' :
+                                      issue.severity === 'Medium' ? 'bg-yellow-200 text-yellow-800' :
+                                        'bg-green-200 text-green-800'
+                                  }`}>
                                   {issue.severity}
                                 </span>
                                 <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
@@ -703,7 +698,7 @@ const CropIntelligence = () => {
                                 </span>
                               </div>
                             </div>
-                            
+
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                               <div>
                                 <p className="text-sm text-gray-600">Affected Area</p>
@@ -744,11 +739,10 @@ const CropIntelligence = () => {
                                 <div key={i} className="bg-white p-4 rounded-lg border-l-4 border-blue-500">
                                   <div className="flex justify-between items-start mb-2">
                                     <h4 className="font-bold text-gray-800">{rec.action}</h4>
-                                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                      rec.priority === 'High' ? 'bg-red-100 text-red-700' :
-                                      rec.priority === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
-                                      'bg-green-100 text-green-700'
-                                    }`}>
+                                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${rec.priority === 'High' ? 'bg-red-100 text-red-700' :
+                                        rec.priority === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
+                                          'bg-green-100 text-green-700'
+                                      }`}>
                                       {rec.priority} Priority
                                     </span>
                                   </div>
@@ -1014,18 +1008,17 @@ const CropIntelligence = () => {
 
                     {/* Interpretation */}
                     {ndviStats.interpretation && (
-                      <div className={`border-2 rounded-xl p-6 ${
-                        ndviStats.interpretation.status === 'Excellent' || ndviStats.interpretation.status === 'Good' 
-                          ? 'bg-green-50 border-green-300' 
-                          : ndviStats.interpretation.status === 'Fair' 
-                          ? 'bg-yellow-50 border-yellow-300' 
-                          : 'bg-red-50 border-red-300'
-                      }`}>
+                      <div className={`border-2 rounded-xl p-6 ${ndviStats.interpretation.status === 'Excellent' || ndviStats.interpretation.status === 'Good'
+                          ? 'bg-green-50 border-green-300'
+                          : ndviStats.interpretation.status === 'Fair'
+                            ? 'bg-yellow-50 border-yellow-300'
+                            : 'bg-red-50 border-red-300'
+                        }`}>
                         <div className="flex items-start gap-4">
                           <div className="text-4xl">
                             {ndviStats.interpretation.status === 'Excellent' ? '🌟' :
-                             ndviStats.interpretation.status === 'Good' ? '✅' :
-                             ndviStats.interpretation.status === 'Fair' ? '⚠️' : '🚨'}
+                              ndviStats.interpretation.status === 'Good' ? '✅' :
+                                ndviStats.interpretation.status === 'Fair' ? '⚠️' : '🚨'}
                           </div>
                           <div>
                             <h3 className="text-2xl font-bold text-gray-800 mb-2">

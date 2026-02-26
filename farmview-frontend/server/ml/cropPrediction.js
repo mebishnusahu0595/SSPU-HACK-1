@@ -142,12 +142,26 @@ class CropDamagePrediction {
     irrigationType,
     growthStage = 'vegetative'
   }) {
-    const crop = this.cropProfiles[cropType];
-    
+    let crop = this.cropProfiles[cropType];
+
     if (!crop) {
-      return {
-        success: false,
-        message: `Crop type "${cropType}" not found in database`
+      // Fallback to a generic crop profile instead of throwing an error
+      crop = {
+        optimalTemp: { min: 18, max: 30 },
+        optimalRain: { min: 5, max: 10 },
+        sensitivities: {
+          waterlogging: 5,
+          drought: 5,
+          heat: 5,
+          cold: 5,
+          humidity: 5
+        },
+        stages: {
+          germination: { rain: 5, heat: 5, cold: 5 },
+          vegetative: { rain: 5, heat: 5, cold: 5 },
+          flowering: { rain: 5, heat: 5, cold: 5 },
+          maturity: { rain: 5, heat: 5, cold: 5 }
+        }
       };
     }
 
@@ -204,7 +218,7 @@ class CropDamagePrediction {
   calculateWaterloggingRisk(rainfall, soilType, crop, stage) {
     const baseSensitivity = crop.sensitivities.waterlogging;
     const stageSensitivity = crop.stages[stage]?.rain || 5;
-    
+
     // Soil drainage factor
     const soilFactor = {
       'Sandy': 0.3,
@@ -224,7 +238,7 @@ class CropDamagePrediction {
 
     // Calculate risk (0-10 scale)
     const risk = (baseSensitivity * 0.4 + stageSensitivity * 0.3 + rainFactor * 0.3) * soilFactor;
-    
+
     return {
       score: Math.min(risk, 10).toFixed(1),
       level: this.getRiskLevel(risk),
@@ -243,7 +257,7 @@ class CropDamagePrediction {
   calculateDroughtRisk(rainfall, temperature, irrigationType, crop, stage) {
     const baseSensitivity = crop.sensitivities.drought;
     const stageSensitivity = crop.stages[stage]?.rain || 5;
-    
+
     // Irrigation factor (reduces risk)
     const irrigationFactor = {
       'Drip': 0.2,
@@ -263,7 +277,7 @@ class CropDamagePrediction {
     const tempFactor = temperature > 35 ? 1.3 : temperature > 30 ? 1.1 : 1.0;
 
     const risk = (baseSensitivity * 0.35 + stageSensitivity * 0.25 + rainFactor * 0.4) * irrigationFactor * tempFactor;
-    
+
     return {
       score: Math.min(risk, 10).toFixed(1),
       level: this.getRiskLevel(risk),
@@ -295,7 +309,7 @@ class CropDamagePrediction {
     const humidityFactor = humidity > 80 ? 1.2 : humidity > 70 ? 1.1 : 1.0;
 
     const risk = (baseSensitivity * 0.4 + stageSensitivity * 0.3 + tempFactor * 0.3) * humidityFactor;
-    
+
     return {
       score: Math.min(risk, 10).toFixed(1),
       level: this.getRiskLevel(risk),
@@ -324,7 +338,7 @@ class CropDamagePrediction {
     else if (tempDeficit > 2) tempFactor = 3; // Moderate cold
 
     const risk = baseSensitivity * 0.5 + stageSensitivity * 0.2 + tempFactor * 0.3;
-    
+
     return {
       score: Math.min(risk, 10).toFixed(1),
       level: this.getRiskLevel(risk),
@@ -342,14 +356,14 @@ class CropDamagePrediction {
    */
   calculateDiseaseRisk(humidity, rainfall, temperature, crop) {
     const baseSensitivity = crop.sensitivities.humidity;
-    
+
     // High humidity + moderate temp + rain = disease outbreak
     const humidityFactor = humidity > 85 ? 8 : humidity > 75 ? 6 : humidity > 65 ? 3 : 0;
     const rainFactor = rainfall > 20 ? 1.3 : rainfall > 10 ? 1.1 : 1.0;
     const tempFactor = (temperature > 20 && temperature < 30) ? 1.2 : 1.0;
 
     const risk = (baseSensitivity * 0.5 + humidityFactor * 0.5) * rainFactor * tempFactor;
-    
+
     return {
       score: Math.min(risk, 10).toFixed(1),
       level: this.getRiskLevel(risk),
@@ -398,7 +412,7 @@ class CropDamagePrediction {
 
     forecast.forEach((day, index) => {
       const dayNum = index + 1;
-      
+
       // Check for heavy rain
       if (day.rainfall > 50) {
         upcomingRisks.push({
@@ -447,7 +461,7 @@ class CropDamagePrediction {
     return {
       hasData: true,
       upcomingRisks,
-      summary: upcomingRisks.length > 0 
+      summary: upcomingRisks.length > 0
         ? `${upcomingRisks.length} potential risks in next ${forecast.length} days`
         : 'No significant risks in forecast'
     };
@@ -488,7 +502,7 @@ class CropDamagePrediction {
     const scores = Object.values(risks).map(r => parseFloat(r.score));
     const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
     const variance = scores.reduce((sum, score) => sum + Math.pow(score - avg, 2), 0) / scores.length;
-    
+
     // Low variance = high agreement = high confidence
     const confidence = Math.max(0.5, 1 - (variance / 25));
     return confidence.toFixed(2);

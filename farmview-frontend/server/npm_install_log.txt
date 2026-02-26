@@ -1,0 +1,420 @@
+node.exe : npm warn 
+deprecated inflight@1.0.6: 
+This module is not 
+supported, and leaks memory. 
+Do not use it. Check out 
+lru-cache if you want a good 
+and tested way to coalesce 
+async requests by a key 
+value, which is much more 
+comprehensive and powerful.
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
+    + CategoryInfo           
+   : NotSpecified: (npm war  
+  n deprec...e and powerfu   
+ l.:String) [], RemoteExc    
+eption
+    + FullyQualifiedErrorId  
+   : NativeCommandError
+ 
+npm warn deprecated 
+rimraf@2.7.1: Rimraf 
+versions prior to v4 are no 
+longer supported
+npm warn deprecated 
+rimraf@3.0.2: Rimraf 
+versions prior to v4 are no 
+longer supported
+npm warn deprecated 
+glob@7.2.3: Old versions of 
+glob are not supported, and 
+contain widely publicized 
+security vulnerabilities, 
+which have been fixed in the 
+current version. Please 
+update. Support for old 
+versions may be purchased 
+(at exorbitant rates) by 
+contacting i@izs.me
+npm warn deprecated 
+npmlog@5.0.1: This package 
+is no longer supported.
+npm warn deprecated 
+multer@1.4.5-lts.2: Multer 
+1.x is impacted by a number 
+of vulnerabilities, which 
+have been patched in 2.x. 
+You should upgrade to the 
+latest 2.x version.
+npm warn deprecated 
+prebuild-install@7.1.3: No 
+longer maintained. Please 
+contact the author of the 
+relevant native addon; 
+alternatives are available.
+npm warn deprecated 
+are-we-there-yet@2.0.0: This 
+package is no longer 
+supported.
+npm warn deprecated 
+gauge@3.0.2: This package is 
+no longer supported.
+npm warn deprecated 
+tar@6.2.1: Old versions of 
+tar are not supported, and 
+contain widely publicized 
+security vulnerabilities, 
+which have been fixed in the 
+current version. Please 
+update. Support for old 
+versions may be purchased 
+(at exorbitant rates) by 
+contacting i@izs.me
+npm warn deprecated 
+gridfs-stream@1.1.1: This 
+project has been sunset. 
+Please migrate to an 
+alternative.
+npm warn deprecated 
+node-domexception@1.0.0: Use 
+your platform's native 
+DOMException instead
+npm warn cleanup Failed to 
+remove some directories [
+npm warn cleanup   [
+npm warn cleanup     '\\\\?\\
+D:\\SSPU-HACK-1\\farmview-fro
+ntend\\server\\node_modules',
+npm warn cleanup     [Error: 
+EPERM: operation not 
+permitted, rmdir 'D:\SSPU-HAC
+K-1\farmview-frontend\server\
+node_modules\tar-fs'] {
+npm warn cleanup       
+errno: -4048,
+npm warn cleanup       code: 
+'EPERM',
+npm warn cleanup       
+syscall: 'rmdir',
+npm warn cleanup       path: 
+'D:\\SSPU-HACK-1\\farmview-fr
+ontend\\server\\node_modules\
+\tar-fs'
+npm warn cleanup     }
+npm warn cleanup   ]
+npm warn cleanup ]
+npm error code 1
+npm error path D:\SSPU-HACK-1
+\farmview-frontend\server\nod
+e_modules\@tensorflow\tfjs-no
+de
+npm error command failed
+npm error command 
+C:\WINDOWS\system32\cmd.exe 
+/d /s /c node 
+scripts/install.js
+npm error 
+CPU-windows-4.22.0.zip
+npm error https://storage.goo
+gleapis.com/tensorflow/libten
+sorflow/libtensorflow-cpu-win
+dows-x86_64-2.9.1.zip
+npm error node-pre-gyp 
+install failed with error: 
+Error: Command failed: 
+node-pre-gyp install 
+--fallback-to-build
+npm error node-pre-gyp info 
+it worked if it ends with ok
+npm error node-pre-gyp info 
+using node-pre-gyp@1.0.9
+npm error node-pre-gyp info 
+using node@24.11.1 | win32 | 
+x64
+npm error node-pre-gyp info 
+check checked for "D:\SSPU-HA
+CK-1\farmview-frontend\server
+\node_modules\@tensorflow\tfj
+s-node\lib\napi-v8\tfjs_bindi
+ng.node" (not found)
+npm error node-pre-gyp http 
+GET https://storage.googleapi
+s.com/tf-builds/pre-built-bin
+ary/napi-v8/4.22.0/CPU-window
+s-4.22.0.zip
+npm error node-pre-gyp ERR! 
+install response status 404 
+Not Found on https://storage.
+googleapis.com/tf-builds/pre-
+built-binary/napi-v8/4.22.0/C
+PU-windows-4.22.0.zip 
+npm error node-pre-gyp WARN 
+Pre-built binaries not 
+installable for 
+@tensorflow/tfjs-node@4.22.0 
+and node@24.11.1 (node-v137 
+ABI, unknown) (falling back 
+to source compile with 
+node-gyp) 
+npm error node-pre-gyp WARN 
+Hit error response status 
+404 Not Found on https://stor
+age.googleapis.com/tf-builds/
+pre-built-binary/napi-v8/4.22
+.0/CPU-windows-4.22.0.zip 
+npm error gyp info it worked 
+if it ends with ok
+npm error gyp info using 
+node-gyp@11.4.2
+npm error gyp info using 
+node@24.11.1 | win32 | x64
+npm error gyp info ok 
+npm error gyp info it worked 
+if it ends with ok
+npm error gyp info using 
+node-gyp@11.4.2
+npm error gyp info using 
+node@24.11.1 | win32 | x64
+npm error gyp info find 
+Python using Python version 
+3.13.6 found at "C:\Users\naw
+az\AppData\Local\Programs\Pyt
+hon\Python313\python3.13t.exe
+"
+npm error gyp http GET https:
+//nodejs.org/download/release
+/v24.11.1/node-v24.11.1-heade
+rs.tar.gz
+npm error gyp http 200 https:
+//nodejs.org/download/release
+/v24.11.1/node-v24.11.1-heade
+rs.tar.gz
+npm error gyp http GET https:
+//nodejs.org/download/release
+/v24.11.1/SHASUMS256.txt
+npm error gyp http GET https:
+//nodejs.org/download/release
+/v24.11.1/win-x64/node.lib
+npm error gyp http 200 https:
+//nodejs.org/download/release
+/v24.11.1/SHASUMS256.txt
+npm error gyp http 200 https:
+//nodejs.org/download/release
+/v24.11.1/win-x64/node.lib
+npm error gyp ERR! find VS 
+npm error gyp ERR! find VS 
+msvs_version not set from 
+command line or npm config
+npm error gyp ERR! find VS 
+VCINSTALLDIR not set, not 
+running in VS Command Prompt
+npm error gyp ERR! find VS 
+could not use PowerShell to 
+find Visual Studio 2017 or 
+newer, try re-running with 
+'--loglevel silly' for more 
+details.
+npm error gyp ERR! find VS 
+npm error gyp ERR! find VS 
+Failure details: undefined
+npm error gyp ERR! find VS 
+could not use PowerShell to 
+find Visual Studio 2017 or 
+newer, try re-running with 
+'--loglevel silly' for more 
+details.
+npm error gyp ERR! find VS 
+npm error gyp ERR! find VS 
+Failure details: undefined
+npm error gyp ERR! find VS 
+not looking for VS2017 as it 
+is only supported up to 
+Node.js 21
+npm error gyp ERR! find VS 
+not looking for VS2017 as it 
+is only supported up to 
+Node.js 21
+npm error gyp ERR! find VS 
+not looking for VS2017 as it 
+is only supported up to 
+Node.js 21
+npm error gyp ERR! find VS 
+not looking for VS2015 as it 
+is only supported up to 
+Node.js 18
+npm error gyp ERR! find VS 
+not looking for VS2013 as it 
+is only supported up to 
+Node.js 8
+npm error gyp ERR! find VS 
+npm error gyp ERR! find VS **
+*****************************
+*****************************
+**
+npm error gyp ERR! find VS 
+You need to install the 
+latest version of Visual 
+Studio
+npm error gyp ERR! find VS 
+including the "Desktop 
+development with C++" 
+workload.
+npm error gyp ERR! find VS 
+For more information consult 
+the documentation at:
+npm error gyp ERR! find VS ht
+tps://github.com/nodejs/node-
+gyp#on-windows
+npm error gyp ERR! find VS **
+*****************************
+*****************************
+**
+npm error gyp ERR! find VS 
+npm error gyp ERR! configure 
+error 
+npm error gyp ERR! stack 
+Error: Could not find any 
+Visual Studio installation 
+to use
+npm error gyp ERR! stack at 
+VisualStudioFinder.fail 
+(C:\Program Files\nodejs\node
+_modules\npm\node_modules\nod
+e-gyp\lib\find-visualstudio.j
+s:118:11)
+npm error gyp ERR! stack at V
+isualStudioFinder.findVisualS
+tudio (C:\Program Files\nodej
+s\node_modules\npm\node_modul
+es\node-gyp\lib\find-visualst
+udio.js:74:17)
+npm error gyp ERR! stack at p
+rocess.processTicksAndRejecti
+ons (node:internal/process/ta
+sk_queues:103:5)
+npm error gyp ERR! stack at 
+async createBuildDir 
+(C:\Program Files\nodejs\node
+_modules\npm\node_modules\nod
+e-gyp\lib\configure.js:112:18
+)
+npm error gyp ERR! stack at 
+async run (C:\Program Files\n
+odejs\node_modules\npm\node_m
+odules\node-gyp\bin\node-gyp.
+js:81:18)
+npm error gyp ERR! System 
+Windows_NT 10.0.26200
+npm error gyp ERR! command 
+"C:\\Program 
+Files\\nodejs\\node.exe" 
+"C:\\Program Files\\nodejs\\n
+ode_modules\\npm\\node_module
+s\\node-gyp\\bin\\node-gyp.js
+" "configure" 
+"--fallback-to-build" "--modu
+le=D:\\SSPU-HACK-1\\farmview-
+frontend\\server\\node_module
+s\\@tensorflow\\tfjs-node\\li
+b\\napi-v8\\tfjs_binding.node
+" 
+"--module_name=tfjs_binding" 
+"--module_path=D:\\SSPU-HACK-
+1\\farmview-frontend\\server\
+\node_modules\\@tensorflow\\t
+fjs-node\\lib\\napi-v8" 
+"--napi_version=10" 
+"--node_abi_napi=napi" 
+"--napi_build_version=8" 
+"--node_napi_label=napi-v8"
+npm error gyp ERR! cwd D:\SSP
+U-HACK-1\farmview-frontend\se
+rver\node_modules\@tensorflow
+\tfjs-node
+npm error gyp ERR! node -v 
+v24.11.1
+npm error gyp ERR! node-gyp 
+-v v11.4.2
+npm error gyp ERR! not ok 
+npm error node-pre-gyp ERR! 
+build error 
+npm error node-pre-gyp ERR! 
+stack Error: Failed to 
+execute 'C:\Program 
+Files\nodejs\node.exe 
+C:\Program Files\nodejs\node_
+modules\npm\node_modules\node
+-gyp\bin\node-gyp.js 
+configure 
+--fallback-to-build --module=
+D:\SSPU-HACK-1\farmview-front
+end\server\node_modules\@tens
+orflow\tfjs-node\lib\napi-v8\
+tfjs_binding.node 
+--module_name=tfjs_binding --
+module_path=D:\SSPU-HACK-1\fa
+rmview-frontend\server\node_m
+odules\@tensorflow\tfjs-node\
+lib\napi-v8 
+--napi_version=10 
+--node_abi_napi=napi 
+--napi_build_version=8 
+--node_napi_label=napi-v8' 
+(1)
+npm error node-pre-gyp ERR! 
+stack     at 
+ChildProcess.<anonymous> (D:\
+SSPU-HACK-1\farmview-frontend
+\server\node_modules\@mapbox\
+node-pre-gyp\lib\util\compile
+.js:89:23)
+npm error node-pre-gyp ERR! 
+stack     at 
+ChildProcess.emit 
+(node:events:508:28)
+npm error node-pre-gyp ERR! 
+stack     at maybeClose (node
+:internal/child_process:1101:
+16)
+npm error node-pre-gyp ERR! 
+stack     at 
+ChildProcess._handle.onexit (
+node:internal/child_process:3
+05:5)
+npm error node-pre-gyp ERR! 
+System Windows_NT 10.0.26200
+npm error node-pre-gyp ERR! 
+command "C:\\Program 
+Files\\nodejs\\node.exe" "D:\
+\SSPU-HACK-1\\farmview-fronte
+nd\\server\\node_modules\\@ma
+pbox\\node-pre-gyp\\bin\\node
+-pre-gyp" "install" 
+"--fallback-to-build"
+npm error node-pre-gyp ERR! 
+cwd D:\SSPU-HACK-1\farmview-f
+rontend\server\node_modules\@
+tensorflow\tfjs-node
+npm error node-pre-gyp ERR! 
+node -v v24.11.1
+npm error node-pre-gyp ERR! 
+node-pre-gyp -v v1.0.9
+npm error node-pre-gyp ERR! 
+not ok
+npm error * Downloading 
+libtensorflow
+npm error
+npm error * Building 
+TensorFlow Node.js bindings
+npm error A complete log of 
+this run can be found in: C:\
+Users\nawaz\AppData\Local\npm
+-cache\_logs\2026-02-26T19_41
+_12_222Z-debug-0.log

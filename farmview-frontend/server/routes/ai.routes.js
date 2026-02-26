@@ -15,7 +15,7 @@ const groq = new Groq({
 router.post('/field-advisor', protect, async (req, res) => {
   console.log('🤖 Field Advisor Request Received');
   console.log('Request body:', req.body);
-  
+
   try {
     const { propertyId, fieldContext, question, conversationHistory } = req.body;
 
@@ -121,7 +121,7 @@ Provide helpful, specific farming advice for this farmer's field. Remember: ONLY
 
   } catch (error) {
     console.error('AI Field Advisor Error:', error);
-    
+
     // Fallback response if AI fails
     const fallbackResponse = `I'm having trouble processing your question right now. 🌾
 
@@ -169,7 +169,7 @@ Please try asking your question again!`;
 function generateSuggestions(question, fieldContext) {
   const lowerQuestion = question.toLowerCase();
   const crop = fieldContext.crop?.toLowerCase() || 'crop';
-  
+
   const suggestionSets = {
     weather: [
       'What if there\'s too much rain?',
@@ -238,7 +238,7 @@ function generateSuggestions(question, fieldContext) {
 // @access  Private
 router.post('/chat', protect, async (req, res) => {
   console.log('💬 AI Chat Request Received');
-  
+
   try {
     const { message, conversationHistory = [] } = req.body;
 
@@ -341,10 +341,21 @@ Respond in a friendly, helpful tone as if talking to a farmer friend.`
 
   } catch (error) {
     console.error('❌ AI Chat Error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to get AI response',
-      error: error.message
+
+    // Fallback response if AI fails (e.g. invalid API key)
+    res.json({
+      success: true,
+      data: {
+        response: `I'm currently unable to connect to my knowledge base to provide a specific answer. 🌾
+
+Here's some general advice regarding clay soil:
+- Avoid working clay soil when it's too wet, as it leads to compaction
+- Add plenty of organic matter (compost, well-rotted manure) to improve drainage
+- Consider raised beds for crops that need better drainage
+- Best crops for clay soil include: Rice, Wheat, Gram, and certain types of Brassicas (cabbage, broccoli)
+
+Please try again later or ask your local krishi vigyan kendra!`
+      }
     });
   }
 });

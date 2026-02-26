@@ -58,38 +58,38 @@ export default function Dashboard() {
   };
 
   const quickActions = [
-    { 
-      icon: <FaFileAlt className="text-4xl" />, 
-      title: t('nav.documents'), 
-      path: '/documents', 
+    {
+      icon: <FaFileAlt className="text-4xl" />,
+      title: t('nav.documents'),
+      path: '/documents',
       color: 'from-blue-500 to-blue-600',
       description: 'Manage documents'
     },
-    { 
-      icon: <FaMapMarkedAlt className="text-4xl" />, 
-      title: t('nav.property'), 
-      path: '/property', 
+    {
+      icon: <FaMapMarkedAlt className="text-4xl" />,
+      title: t('nav.property'),
+      path: '/property',
       color: 'from-green-500 to-green-600',
       description: 'View properties'
     },
-    { 
-      icon: <FaShieldAlt className="text-4xl" />, 
-      title: t('nav.insurance'), 
-      path: '/insurance', 
+    {
+      icon: <FaShieldAlt className="text-4xl" />,
+      title: t('nav.insurance'),
+      path: '/insurance',
       color: 'from-purple-500 to-purple-600',
       description: 'Insurance policies'
     },
-    { 
-      icon: <FaCloudSun className="text-4xl" />, 
-      title: t('nav.weather'), 
-      path: '/weather', 
+    {
+      icon: <FaCloudSun className="text-4xl" />,
+      title: t('nav.weather'),
+      path: '/weather',
       color: 'from-yellow-500 to-yellow-600',
       description: 'Weather forecast'
     },
-    { 
-      icon: <span className="text-4xl">🌾</span>, 
-      title: 'Crop Intelligence', 
-      path: '/crop-intelligence', 
+    {
+      icon: <span className="text-4xl">🌾</span>,
+      title: 'Crop Intelligence',
+      path: '/crop-intelligence',
       color: 'from-teal-500 to-teal-600',
       description: 'AI-powered crop analysis'
     },
@@ -110,7 +110,7 @@ export default function Dashboard() {
           >
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
               <div>
-                <motion.h2 
+                <motion.h2
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.2 }}
@@ -118,7 +118,7 @@ export default function Dashboard() {
                 >
                   {t('dashboard.welcome')}, {farmer?.name}! 🌾
                 </motion.h2>
-                <motion.p 
+                <motion.p
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.3 }}
@@ -180,7 +180,7 @@ export default function Dashboard() {
             >
               {t('dashboard.quickActions')}
             </motion.h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
               {quickActions.map((action, index) => (
                 <motion.div
                   key={index}
@@ -218,7 +218,7 @@ export default function Dashboard() {
               </h3>
               <FaClock className="text-blue-500 text-2xl" />
             </div>
-            
+
             {loading ? (
               <div className="flex justify-center py-8">
                 <div className="spinner w-8 h-8" />

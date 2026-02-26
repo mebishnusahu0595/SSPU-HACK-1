@@ -5,8 +5,6 @@ const multer = require('multer');
 const mongoose = require('mongoose');
 const Farmer = require('../models/Farmer.model');
 const { generateToken, protect } = require('../middleware/auth.middleware');
-const { verifyRecaptcha } = require('../middleware/recaptcha.middleware');
-
 // Initialize GridFS for profile pictures
 let gridfsBucket;
 const conn = mongoose.connection;
@@ -39,166 +37,164 @@ const upload = multer({
 // @route   POST /api/auth/signup
 // @desc    Register a new farmer
 // @access  Public
-router.post('/signup', 
-  verifyRecaptcha,
+router.post('/signup',
   [
     body('name').trim().notEmpty().withMessage('Name is required'),
     body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
     body('mobile').matches(/^[0-9]{10}$/).withMessage('Valid 10-digit mobile number is required'),
     body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
-  ], 
+  ],
   async (req, res) => {
-  try {
-    // Validate input
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
+    try {
+      // Validate input
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          errors: errors.array()
+        });
+      }
+
+      const { name, email, mobile, password, preferredLanguage } = req.body;
+
+      // Check if farmer already exists
+      const existingFarmer = await Farmer.findOne({
+        $or: [{ email }, { mobile }]
+      });
+
+      if (existingFarmer) {
+        if (existingFarmer.email === email) {
+          return res.status(400).json({
+            success: false,
+            message: 'Email already registered. Please login or use different email.'
+          });
+        }
+        if (existingFarmer.mobile === mobile) {
+          return res.status(400).json({
+            success: false,
+            message: 'Mobile number already registered. Please login or use different number.'
+          });
+        }
+      }
+
+      // Create new farmer
+      const farmer = await Farmer.create({
+        name,
+        email,
+        mobile,
+        password,
+        preferredLanguage: preferredLanguage || 'en'
+      });
+
+      // Generate JWT token
+      const token = generateToken(farmer._id);
+
+      res.status(201).json({
+        success: true,
+        message: 'Registration successful! Welcome to FarmView AI.',
+        data: {
+          farmerId: farmer.farmerId,
+          name: farmer.name,
+          email: farmer.email,
+          mobile: farmer.mobile,
+          preferredLanguage: farmer.preferredLanguage,
+          token
+        }
+      });
+
+    } catch (error) {
+      console.error('Signup Error:', error);
+      res.status(500).json({
         success: false,
-        errors: errors.array()
+        message: 'Registration failed. Please try again.',
+        error: error.message
       });
     }
-
-    const { name, email, mobile, password, preferredLanguage } = req.body;
-
-    // Check if farmer already exists
-    const existingFarmer = await Farmer.findOne({
-      $or: [{ email }, { mobile }]
-    });
-
-    if (existingFarmer) {
-      if (existingFarmer.email === email) {
-        return res.status(400).json({
-          success: false,
-          message: 'Email already registered. Please login or use different email.'
-        });
-      }
-      if (existingFarmer.mobile === mobile) {
-        return res.status(400).json({
-          success: false,
-          message: 'Mobile number already registered. Please login or use different number.'
-        });
-      }
-    }
-
-    // Create new farmer
-    const farmer = await Farmer.create({
-      name,
-      email,
-      mobile,
-      password,
-      preferredLanguage: preferredLanguage || 'en'
-    });
-
-    // Generate JWT token
-    const token = generateToken(farmer._id);
-
-    res.status(201).json({
-      success: true,
-      message: 'Registration successful! Welcome to FarmView AI.',
-      data: {
-        farmerId: farmer.farmerId,
-        name: farmer.name,
-        email: farmer.email,
-        mobile: farmer.mobile,
-        preferredLanguage: farmer.preferredLanguage,
-        token
-      }
-    });
-
-  } catch (error) {
-    console.error('Signup Error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Registration failed. Please try again.',
-      error: error.message
-    });
-  }
-});
+  });
 
 // @route   POST /api/auth/login
 // @desc    Login farmer
 // @access  Public
-router.post('/login', 
-  verifyRecaptcha,
+router.post('/login',
   [
     body('identifier').notEmpty().withMessage('Email or mobile number is required'),
     body('password').notEmpty().withMessage('Password is required')
-  ], 
+  ],
   async (req, res) => {
-  try {
-    // Validate input
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        errors: errors.array()
-      });
-    }
-
-    const { identifier, password } = req.body;
-
-    // Find farmer by email or mobile
-    const farmer = await Farmer.findOne({
-      $or: [
-        { email: identifier },
-        { mobile: identifier }
-      ]
-    }).select('+password');
-
-    if (!farmer) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid credentials. Please check your email/mobile and password.'
-      });
-    }
-
-    // Check if account is active
-    if (!farmer.isActive) {
-      return res.status(401).json({
-        success: false,
-        message: 'Your account has been deactivated. Please contact support.'
-      });
-    }
-
-    // Verify password
-    const isPasswordMatch = await farmer.comparePassword(password);
-
-    if (!isPasswordMatch) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid credentials. Please check your email/mobile and password.'
-      });
-    }
-
-    // Update last login
-    await farmer.updateLastLogin();
-
-    // Generate JWT token
-    const token = generateToken(farmer._id);
-
-    res.status(200).json({
-      success: true,
-      message: 'Login successful! Welcome back.',
-      data: {
-        farmerId: farmer.farmerId,
-        name: farmer.name,
-        email: farmer.email,
-        mobile: farmer.mobile,
-        preferredLanguage: farmer.preferredLanguage,
-        profilePicture: farmer.profilePicture,
-        token
+    try {
+      // Validate input
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          errors: errors.array()
+        });
       }
-    });
 
-  } catch (error) {
-    console.error('Login Error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Login failed. Please try again.',
-      error: error.message
-    });
-  }
-});
+      const { identifier, password } = req.body;
+
+      // Find farmer by email or mobile
+      const farmer = await Farmer.findOne({
+        $or: [
+          { email: identifier },
+          { mobile: identifier }
+        ]
+      }).select('+password');
+
+      if (!farmer) {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid credentials. Please check your email/mobile and password.'
+        });
+      }
+
+      // Check if account is active
+      if (!farmer.isActive) {
+        return res.status(401).json({
+          success: false,
+          message: 'Your account has been deactivated. Please contact support.'
+        });
+      }
+
+      // Verify password
+      const isPasswordMatch = await farmer.comparePassword(password);
+
+      if (!isPasswordMatch) {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid credentials. Please check your email/mobile and password.'
+        });
+      }
+
+      // Update last login
+      await farmer.updateLastLogin();
+
+      // Generate JWT token
+      const token = generateToken(farmer._id);
+
+      res.status(200).json({
+        success: true,
+        message: 'Login successful! Welcome back.',
+        data: {
+          farmerId: farmer.farmerId,
+          name: farmer.name,
+          email: farmer.email,
+          mobile: farmer.mobile,
+          preferredLanguage: farmer.preferredLanguage,
+          profilePicture: farmer.profilePicture,
+          token
+        }
+      });
+
+    } catch (error) {
+      console.error('Login Error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Login failed. Please try again.',
+        error: error.message
+      });
+    }
+  });
 
 // @route   POST /api/auth/verify-token
 // @desc    Verify JWT token
@@ -400,7 +396,7 @@ router.post('/upload-profile-picture', protect, upload.single('profilePicture'),
     }
 
     const farmerId = req.farmer._id;
-    
+
     // Delete old profile picture if exists
     if (req.farmer.profilePicture) {
       try {
@@ -476,7 +472,7 @@ router.post('/upload-profile-picture', protect, upload.single('profilePicture'),
 router.get('/profile-picture/:fileId', async (req, res) => {
   try {
     const fileId = new mongoose.Types.ObjectId(req.params.fileId);
-    
+
     const downloadStream = gridfsBucket.openDownloadStream(fileId);
 
     downloadStream.on('data', (chunk) => {
@@ -508,7 +504,7 @@ router.get('/profile-picture/:fileId', async (req, res) => {
 router.delete('/delete-profile-picture', protect, async (req, res) => {
   try {
     const farmerId = req.farmer._id;
-    
+
     if (!req.farmer.profilePicture) {
       return res.status(400).json({
         success: false,

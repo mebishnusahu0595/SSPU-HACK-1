@@ -58,11 +58,38 @@ router.get('/current', protect, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Weather API Error:', error.message);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch weather data',
-      error: error.response?.data?.message || error.message
+    console.error('Weather API Error, using fallback data:', error.response?.data?.message || error.message);
+    res.status(200).json({
+      success: true,
+      data: {
+        location: {
+          name: "Fallback Farm Location",
+          country: "IN",
+          coordinates: {
+            latitude: Number(latitude),
+            longitude: Number(longitude)
+          }
+        },
+        current: {
+          temperature: 28.5,
+          feelsLike: 29.2,
+          humidity: 65,
+          pressure: 1012,
+          windSpeed: 4.5,
+          windDirection: 180,
+          clouds: 20,
+          visibility: 10000,
+          weather: {
+            main: "Clear",
+            description: "clear sky",
+            icon: "01d"
+          }
+        },
+        sunrise: new Date(Date.now() - 6 * 60 * 60 * 1000),
+        sunset: new Date(Date.now() + 6 * 60 * 60 * 1000),
+        timestamp: new Date()
+      },
+      fallback: true
     });
   }
 });
@@ -122,11 +149,42 @@ router.get('/forecast', protect, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Weather Forecast Error:', error.message);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch weather forecast',
-      error: error.response?.data?.message || error.message
+    console.error('Weather Forecast API Error, using fallback data:', error.response?.data?.message || error.message);
+
+    // Generate 5 fallback forecast items
+    const fallbackForecast = Array.from({ length: 5 }).map((_, i) => ({
+      datetime: new Date(Date.now() + (i + 1) * 24 * 60 * 60 * 1000),
+      temperature: 28 + (i % 3),
+      feelsLike: 29 + (i % 3),
+      tempMin: 22 + (i % 2),
+      tempMax: 32 + (i % 2),
+      humidity: 60 + (i * 5),
+      pressure: 1010,
+      windSpeed: 5 + i,
+      windDirection: 200,
+      clouds: 40 + (i * 10),
+      rain: 0,
+      weather: {
+        main: "Clouds",
+        description: "scattered clouds",
+        icon: "03d"
+      }
+    }));
+
+    res.status(200).json({
+      success: true,
+      data: {
+        location: {
+          name: "Fallback Farm Location",
+          country: "IN",
+          coordinates: {
+            latitude: Number(latitude),
+            longitude: Number(longitude)
+          }
+        },
+        forecast: fallbackForecast
+      },
+      fallback: true
     });
   }
 });

@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../store/authStore';
-import { 
-  FaSeedling, 
-  FaUser, 
-  FaSignOutAlt, 
-  FaBars, 
+import {
+  FaSeedling,
+  FaUser,
+  FaSignOutAlt,
+  FaBars,
   FaTimes,
   FaHome,
   FaFileAlt,
@@ -50,8 +50,8 @@ export default function Header() {
       <nav className="container mx-auto px-4 py-3">
         <div className="flex justify-between items-center">
           {/* Logo */}
-          <Link 
-            to={isAuthenticated ? '/dashboard' : '/'} 
+          <Link
+            to={isAuthenticated ? '/dashboard' : '/'}
             className="flex items-center space-x-2 group"
             onClick={closeMobileMenu}
           >
@@ -69,18 +69,17 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           {isAuthenticated ? (
-            <div className="hidden md:flex items-center space-x-6">
+            <div className="hidden xl:flex items-center space-x-2 xl:space-x-6">
               {navLinks.map((link) => (
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-all duration-200 ${
-                    isActive(link.path)
+                  className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-all duration-200 ${isActive(link.path)
                       ? 'bg-primary-600 text-white'
                       : link.highlight
-                      ? 'bg-gradient-to-r from-primary-600 to-secondary-600 text-white hover:from-primary-700 hover:to-secondary-700 shadow-md'
-                      : 'text-gray-700 hover:bg-primary-50 hover:text-primary-600'
-                  }`}
+                        ? 'bg-gradient-to-r from-primary-600 to-secondary-600 text-white hover:from-primary-700 hover:to-secondary-700 shadow-md'
+                        : 'text-gray-700 hover:bg-primary-50 hover:text-primary-600'
+                    }`}
                 >
                   <span className="text-lg">{link.icon}</span>
                   <span className="font-medium">{link.label}</span>
@@ -92,14 +91,14 @@ export default function Header() {
 
               {/* User Menu */}
               <div className="flex items-center space-x-4 border-l pl-4 ml-2">
-                <Link 
-                  to="/profile" 
+                <Link
+                  to="/profile"
                   className="flex items-center space-x-2 text-gray-700 hover:text-primary-600 transition-colors"
                 >
                   <FaUser className="text-lg" />
                   <span className="font-medium hidden lg:inline">{farmer?.name}</span>
                 </Link>
-                <button 
+                <button
                   onClick={handleLogout}
                   className="flex items-center space-x-2 px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors"
                 >
@@ -109,15 +108,15 @@ export default function Header() {
               </div>
             </div>
           ) : (
-            <div className="hidden md:flex items-center space-x-4">
-              <Link 
-                to="/login" 
+            <div className="hidden xl:flex items-center space-x-4">
+              <Link
+                to="/login"
                 className="px-6 py-2 text-primary-600 hover:text-primary-700 font-medium transition-colors"
               >
                 Login
               </Link>
-              <Link 
-                to="/signup" 
+              <Link
+                to="/signup"
                 className="px-6 py-2 bg-primary-600 text-white hover:bg-primary-700 rounded-lg font-medium transition-colors shadow-md hover:shadow-lg"
               >
                 Sign Up
@@ -128,7 +127,7 @@ export default function Header() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden text-2xl text-gray-700 hover:text-primary-600 transition-colors"
+            className="xl:hidden text-2xl text-gray-700 hover:text-primary-600 transition-colors"
           >
             {mobileMenuOpen ? <FaTimes /> : <FaBars />}
           </button>
@@ -142,7 +141,7 @@ export default function Header() {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="md:hidden overflow-hidden"
+              className="xl:hidden overflow-hidden"
             >
               <div className="py-4 space-y-2">
                 {isAuthenticated ? (
@@ -164,11 +163,10 @@ export default function Header() {
                         key={link.path}
                         to={link.path}
                         onClick={closeMobileMenu}
-                        className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
-                          isActive(link.path)
+                        className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${isActive(link.path)
                             ? 'bg-primary-600 text-white'
                             : 'text-gray-700 hover:bg-primary-50'
-                        }`}
+                          }`}
                       >
                         <span className="text-xl">{link.icon}</span>
                         <span className="font-medium">{link.label}</span>

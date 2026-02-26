@@ -7,59 +7,34 @@ const RECAPTCHA_SECRET_KEY = '6LfILQEsAAAAAFe6k6h8k83S0QENYt1d5lBG1ilI';
  * Middleware to verify Google reCAPTCHA v2 token
  */
 const verifyRecaptcha = async (req, res, next) => {
+  const { recaptchaToken } = req.body;
+
+  if (!recaptchaToken) {
+    return res.status(400).json({
+      success: false,
+      message: 'reCAPTCHA token is required'
+    });
+  }
+
   try {
-    const { recaptchaToken } = req.body;
+    const response = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify?secret=${RECAPTCHA_SECRET_KEY}&response=${recaptchaToken}`
+    );
 
-    // Check if token is provided
-    if (!recaptchaToken) {
+    if (response.data.success) {
+      req.recaptchaVerified = true;
+      next();
+    } else {
       return res.status(400).json({
         success: false,
-        message: 'reCAPTCHA token is required'
+        message: 'Invalid reCAPTCHA token'
       });
     }
-
-    // Verify token with Google
-    const verificationURL = 'https://www.google.com/recaptcha/api/siteverify';
-    const response = await axios.post(verificationURL, null, {
-      params: {
-        secret: RECAPTCHA_SECRET_KEY,
-        response: recaptchaToken
-      }
-    });
-
-    const { success, score, challenge_ts, hostname } = response.data;
-
-    // Check if verification was successful
-    if (!success) {
-      console.log('❌ reCAPTCHA verification failed:', response.data);
-      return res.status(400).json({
-        success: false,
-        message: 'reCAPTCHA verification failed. Please try again.'
-      });
-    }
-
-    // Log successful verification
-    console.log('✅ reCAPTCHA verified successfully:', {
-      hostname,
-      timestamp: challenge_ts,
-      score
-    });
-
-    // Attach verification data to request for logging
-    req.recaptchaVerified = true;
-    req.recaptchaData = {
-      timestamp: challenge_ts,
-      hostname,
-      score
-    };
-
-    next();
   } catch (error) {
-    console.error('❌ reCAPTCHA verification error:', error.message);
+    console.error('reCAPTCHA verification error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to verify reCAPTCHA. Please try again.',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      message: 'Failed to verify reCAPTCHA'
     });
   }
 };

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import api from '../utils/api';
+import ReCAPTCHA from 'react-google-recaptcha';
 import { useAuthStore } from '../store/authStore';
 import { FaUser, FaEnvelope, FaPhone, FaLock, FaGlobe, FaSeedling, FaArrowRight } from 'react-icons/fa';
 import Header from '../components/Header';
@@ -13,7 +14,7 @@ export default function Signup() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { login } = useAuthStore();
-  
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -24,6 +25,7 @@ export default function Signup() {
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [recaptchaToken, setRecaptchaToken] = useState('');
 
   const languages = [
     { code: 'en', name: 'English' },
@@ -49,35 +51,40 @@ export default function Signup() {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required';
     } else if (formData.name.trim().length < 3) {
       newErrors.name = 'Name must be at least 3 characters';
     }
-    
+
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email is invalid';
     }
-    
+
     if (!formData.mobile.trim()) {
       newErrors.mobile = 'Mobile number is required';
     } else if (!/^\d{10}$/.test(formData.mobile)) {
       newErrors.mobile = 'Mobile must be 10 digits';
     }
-    
+
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
     }
-    
+
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
-    
+
+    if (!recaptchaToken) {
+      newErrors.recaptcha = 'Please verify that you are not a robot';
+      toast.error('Please verify that you are not a robot');
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -98,12 +105,13 @@ export default function Signup() {
         email: formData.email,
         mobile: formData.mobile,
         password: formData.password,
-        preferredLanguage: formData.preferredLanguage
+        preferredLanguage: formData.preferredLanguage,
+        recaptchaToken: recaptchaToken
       });
 
       const { data } = response.data;
       login(data, data.token);
-      
+
       toast.success(
         <div>
           <p className="font-bold">{t('auth.signupSuccess')}</p>
@@ -111,7 +119,7 @@ export default function Signup() {
         </div>,
         { duration: 5000 }
       );
-      
+
       setTimeout(() => {
         navigate('/dashboard');
       }, 300);
@@ -146,7 +154,7 @@ export default function Signup() {
             >
               <FaSeedling className="text-white text-4xl" />
             </motion.div>
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
@@ -154,7 +162,7 @@ export default function Signup() {
             >
               Join FarmView AI
             </motion.h1>
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
@@ -328,6 +336,19 @@ export default function Signup() {
                     </motion.p>
                   )}
                 </div>
+              </div>
+
+              {/* reCAPTCHA */}
+              <div className="flex justify-center my-4">
+                <ReCAPTCHA
+                  sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+                  onChange={(token) => {
+                    setRecaptchaToken(token);
+                    if (errors.recaptcha) {
+                      setErrors({ ...errors, recaptcha: '' });
+                    }
+                  }}
+                />
               </div>
 
               {/* Submit Button */}
