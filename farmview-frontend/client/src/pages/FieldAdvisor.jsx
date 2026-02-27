@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  FaRobot, 
-  FaPaperPlane, 
-  FaMapMarkedAlt, 
+import {
+  FaRobot,
+  FaPaperPlane,
+  FaMapMarkedAlt,
   FaLeaf,
   FaCloudSun,
   FaTint,
@@ -153,7 +153,7 @@ Feel free to ask me anything about your field!`,
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
-      
+
       <div className="flex-grow">
         <div className="container mx-auto px-4 py-8">
           {/* Page Header */}
@@ -181,7 +181,7 @@ Feel free to ask me anything about your field!`,
                   <FaMapMarkedAlt className="mr-2 text-primary-600" />
                   Select a Field to Get Started
                 </h2>
-                
+
                 {loading ? (
                   <div className="flex justify-center py-12">
                     <div className="spinner w-12 h-12" />
@@ -211,7 +211,7 @@ Feel free to ask me anything about your field!`,
                             <h3 className="text-lg font-bold text-gray-800">{prop.propertyName}</h3>
                             {prop.isVerified && <span className="text-green-600">✅</span>}
                           </div>
-                          
+
                           <div className="space-y-2 text-sm text-gray-700">
                             <div className="flex items-center">
                               <FaLeaf className="text-green-600 mr-2" />
@@ -226,7 +226,7 @@ Feel free to ask me anything about your field!`,
                               <span><strong>Soil:</strong> {prop.soilType}</span>
                             </div>
                           </div>
-                          
+
                           <div className="mt-4 pt-4 border-t border-gray-200">
                             <button className="btn-primary w-full text-sm">
                               Chat About This Field →
@@ -248,12 +248,12 @@ Feel free to ask me anything about your field!`,
             >
               {/* Sidebar - Field Info */}
               <div className="lg:col-span-1">
-                <div className="card bg-white sticky top-24">
+                <div className="card bg-white lg:sticky lg:top-24">
                   <div className="bg-gradient-to-br from-primary-600 to-secondary-600 text-white p-4 rounded-t-lg -m-6 mb-4">
                     <h3 className="text-lg font-bold mb-1">{selectedProperty.propertyName}</h3>
                     {selectedProperty.isVerified && <span className="text-xs">✅ Verified Property</span>}
                   </div>
-                  
+
                   <div className="space-y-3 text-sm">
                     <div>
                       <div className="flex items-center text-gray-600 mb-1">
@@ -262,7 +262,7 @@ Feel free to ask me anything about your field!`,
                       </div>
                       <p className="ml-6 text-gray-800">{selectedProperty.currentCrop || 'Not specified'}</p>
                     </div>
-                    
+
                     <div>
                       <div className="flex items-center text-gray-600 mb-1">
                         <FaMapMarkedAlt className="mr-2 text-blue-600" />
@@ -272,7 +272,7 @@ Feel free to ask me anything about your field!`,
                         {selectedProperty.area?.value?.toFixed(2) || 'N/A'} {selectedProperty.area?.unit || 'hectares'}
                       </p>
                     </div>
-                    
+
                     <div>
                       <div className="flex items-center text-gray-600 mb-1">
                         <FaTint className="mr-2 text-amber-700" />
@@ -280,7 +280,7 @@ Feel free to ask me anything about your field!`,
                       </div>
                       <p className="ml-6 text-gray-800">{selectedProperty.soilType}</p>
                     </div>
-                    
+
                     <div>
                       <div className="flex items-center text-gray-600 mb-1">
                         <FaTint className="mr-2 text-cyan-600" />
@@ -289,7 +289,7 @@ Feel free to ask me anything about your field!`,
                       <p className="ml-6 text-gray-800">{selectedProperty.irrigationType}</p>
                     </div>
                   </div>
-                  
+
                   <button
                     onClick={() => setSelectedProperty(null)}
                     className="btn-outline w-full mt-6"
@@ -315,13 +315,12 @@ Feel free to ask me anything about your field!`,
                         >
                           <div className={`max-w-[80%] ${msg.role === 'user' ? 'order-2' : 'order-1'}`}>
                             <div
-                              className={`rounded-lg p-4 ${
-                                msg.role === 'user'
+                              className={`rounded-lg p-4 ${msg.role === 'user'
                                   ? 'bg-primary-600 text-white'
                                   : msg.isError
-                                  ? 'bg-red-50 text-red-800 border border-red-200'
-                                  : 'bg-gray-100 text-gray-800'
-                              }`}
+                                    ? 'bg-red-50 text-red-800 border border-red-200'
+                                    : 'bg-gray-100 text-gray-800'
+                                }`}
                             >
                               {msg.role === 'assistant' && !msg.isError && (
                                 <div className="flex items-center mb-2">
@@ -330,7 +329,7 @@ Feel free to ask me anything about your field!`,
                                 </div>
                               )}
                               <div className="whitespace-pre-wrap">{msg.content}</div>
-                              
+
                               {msg.suggestions && msg.suggestions.length > 0 && (
                                 <div className="mt-3 pt-3 border-t border-gray-200">
                                   <p className="text-xs font-semibold mb-2 flex items-center">
@@ -357,7 +356,7 @@ Feel free to ask me anything about your field!`,
                         </motion.div>
                       ))}
                     </AnimatePresence>
-                    
+
                     {sending && (
                       <motion.div
                         initial={{ opacity: 0 }}
@@ -372,7 +371,7 @@ Feel free to ask me anything about your field!`,
                         </div>
                       </motion.div>
                     )}
-                    
+
                     <div ref={messagesEndRef} />
                   </div>
 
@@ -438,7 +437,7 @@ Feel free to ask me anything about your field!`,
           )}
         </div>
       </div>
-      
+
       <Footer />
     </div>
   );

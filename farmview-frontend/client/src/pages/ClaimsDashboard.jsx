@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  FaCheckCircle, FaClock, FaTimesCircle, FaSpinner, 
+import {
+  FaCheckCircle, FaClock, FaTimesCircle, FaSpinner,
   FaSatellite, FaChartLine, FaMapMarkedAlt, FaCalendarAlt,
   FaMoneyBillWave, FaExclamationTriangle, FaRobot, FaFileAlt
 } from 'react-icons/fa';
@@ -253,7 +253,10 @@ export default function ClaimsDashboard() {
                     {/* Action Buttons */}
                     <div className="flex gap-3 mt-4">
                       <button
-                        onClick={() => setSelectedClaim(claim)}
+                        onClick={() => {
+                          setSelectedClaim(claim);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
                         className="flex-1 btn-primary py-2 text-sm"
                       >
                         View Full Report
@@ -277,9 +280,9 @@ export default function ClaimsDashboard() {
                   About GeoAI Verification
                 </h3>
                 <p className="text-gray-700 text-sm">
-                  All claims are automatically verified using Sentinel-2 satellite imagery and NDVI analysis. 
-                  Our AI system compares current crop health with historical baselines to accurately assess 
-                  damage and detect potential fraud. This ensures fair and fast claim processing without 
+                  All claims are automatically verified using Sentinel-2 satellite imagery and NDVI analysis.
+                  Our AI system compares current crop health with historical baselines to accurately assess
+                  damage and detect potential fraud. This ensures fair and fast claim processing without
                   manual field inspections.
                 </p>
               </div>
@@ -314,7 +317,7 @@ export default function ClaimsDashboard() {
                   <FaTimesCircle className="text-2xl" />
                 </button>
               </div>
-              
+
               {/* Full claim details can be added here */}
               <div className="space-y-4">
                 <p className="text-gray-600">Full claim report coming soon...</p>

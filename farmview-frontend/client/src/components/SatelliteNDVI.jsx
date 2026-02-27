@@ -16,13 +16,13 @@ export default function SatelliteNDVI({ propertyId, propertyName }) {
       setLoading(true);
       setError(null);
       console.log(`Fetching NDVI for property: ${propertyId}`);
-      
+
       const res = await api.get(`/satellite/ndvi/${propertyId}`);
-      
+
       if (res.data?.success) {
         setNdviData(res.data.data);
         setActiveView('ndvi');
-        
+
         // Also fetch NDVI statistics
         fetchNDVIStats();
       }
@@ -50,9 +50,9 @@ export default function SatelliteNDVI({ propertyId, propertyName }) {
       setLoading(true);
       setError(null);
       console.log(`Fetching satellite image for property: ${propertyId}`);
-      
+
       const res = await api.get(`/satellite/property/${propertyId}`);
-      
+
       if (res.data?.success) {
         setSatelliteImage(res.data.data);
         setActiveView('satellite');
@@ -70,10 +70,10 @@ export default function SatelliteNDVI({ propertyId, propertyName }) {
       setLoading(true);
       setError(null);
       console.log(`Fetching property data for Google Maps: ${propertyId}`);
-      
+
       // Fetch property details including coordinates
       const res = await api.get(`/property/${propertyId}`);
-      
+
       if (res.data?.data) {
         setPropertyData(res.data.data);
         setActiveView('googlemap');
@@ -88,9 +88,9 @@ export default function SatelliteNDVI({ propertyId, propertyName }) {
 
   const getNDVIHealthStatus = (stats) => {
     if (!stats) return null;
-    
+
     const healthPercentage = (stats.healthyPixels / stats.validPixels) * 100;
-    
+
     if (healthPercentage >= 70) {
       return {
         status: 'Excellent',
@@ -129,46 +129,43 @@ export default function SatelliteNDVI({ propertyId, propertyName }) {
   const healthStatus = ndviStats ? getNDVIHealthStatus(ndviStats) : null;
 
   return (
-    <div className="card p-6 mt-6 bg-gradient-to-br from-white to-gray-50">
-      <h2 className="text-3xl font-bold mb-6 flex items-center text-gray-800">
-        <span className="text-4xl mr-3">🛰️</span>
-        Satellite Analysis - {propertyName}
+    <div className="card p-3 sm:p-6 mt-4 sm:mt-6 bg-gradient-to-br from-white to-gray-50">
+      <h2 className="text-xl sm:text-3xl font-bold mb-4 sm:mb-6 flex items-center text-gray-800 pr-8">
+        <span className="text-2xl sm:text-4xl mr-2 sm:mr-3">🛰️</span>
+        <span className="truncate">Satellite Analysis: {propertyName}</span>
       </h2>
 
       {/* Action Buttons */}
-      <div className="flex flex-wrap gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-4 mb-6">
         <button
           onClick={fetchNDVI}
           disabled={loading}
-          className={`btn px-6 py-3 rounded-xl font-semibold transition-all transform hover:scale-105 ${
-            activeView === 'ndvi' 
-              ? 'bg-green-600 text-white shadow-lg' 
+          className={`btn px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold transition-all transform hover:scale-105 text-sm sm:text-base ${activeView === 'ndvi'
+              ? 'bg-green-600 text-white shadow-lg'
               : 'bg-white border-2 border-green-600 text-green-600 hover:bg-green-50'
-          } disabled:opacity-50 disabled:cursor-not-allowed`}
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
         >
-          {loading && activeView === 'ndvi' ? '⏳ Loading...' : '📊 NDVI Heatmap'}
+          {loading && activeView === 'ndvi' ? '⏳...' : '📊 NDVI Heatmap'}
         </button>
         <button
           onClick={fetchSatelliteImage}
           disabled={loading}
-          className={`btn px-6 py-3 rounded-xl font-semibold transition-all transform hover:scale-105 ${
-            activeView === 'satellite' 
-              ? 'bg-blue-600 text-white shadow-lg' 
+          className={`btn px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold transition-all transform hover:scale-105 text-sm sm:text-base ${activeView === 'satellite'
+              ? 'bg-blue-600 text-white shadow-lg'
               : 'bg-white border-2 border-blue-600 text-blue-600 hover:bg-blue-50'
-          } disabled:opacity-50 disabled:cursor-not-allowed`}
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
         >
-          {loading && activeView === 'satellite' ? '⏳ Loading...' : '🌍 Sentinel Image'}
+          {loading && activeView === 'satellite' ? '⏳...' : '🌍 Sentinel Image'}
         </button>
         <button
           onClick={showGoogleMap}
           disabled={loading}
-          className={`btn px-6 py-3 rounded-xl font-semibold transition-all transform hover:scale-105 ${
-            activeView === 'googlemap' 
-              ? 'bg-purple-600 text-white shadow-lg' 
+          className={`btn px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold transition-all transform hover:scale-105 text-sm sm:text-base ${activeView === 'googlemap'
+              ? 'bg-purple-600 text-white shadow-lg'
               : 'bg-white border-2 border-purple-600 text-purple-600 hover:bg-purple-50'
-          } disabled:opacity-50 disabled:cursor-not-allowed`}
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
         >
-          {loading && activeView === 'googlemap' ? '⏳ Loading...' : '🗺️ Google Maps Satellite'}
+          {loading && activeView === 'googlemap' ? '⏳...' : '🗺️ Google Maps Satellite'}
         </button>
       </div>
 
@@ -185,21 +182,21 @@ export default function SatelliteNDVI({ propertyId, propertyName }) {
 
       {/* Health Status Banner */}
       {healthStatus && (
-        <div className={`${healthStatus.bgColor} border-2 ${healthStatus.color} border-current rounded-xl p-6 mb-6 shadow-lg`}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <span className="text-5xl">{healthStatus.icon}</span>
+        <div className={`${healthStatus.bgColor} border-2 ${healthStatus.color} border-current rounded-xl p-4 sm:p-6 mb-6 shadow-lg`}>
+          <div className="flex flex-col sm:flex-row items-center justify-between text-center sm:text-left gap-4">
+            <div className="flex flex-col sm:flex-row items-center sm:space-x-4">
+              <span className="text-4xl sm:text-5xl mb-2 sm:mb-0">{healthStatus.icon}</span>
               <div>
-                <h3 className={`text-2xl font-bold ${healthStatus.color}`}>
+                <h3 className={`text-xl sm:text-2xl font-bold ${healthStatus.color}`}>
                   Field Health: {healthStatus.status}
                 </h3>
-                <p className="text-sm mt-1">{healthStatus.message}</p>
+                <p className="text-xs sm:text-sm mt-1">{healthStatus.message}</p>
               </div>
             </div>
             {ndviStats && (
-              <div className="text-right">
-                <div className="text-3xl font-bold">{((ndviStats.healthyPixels / ndviStats.validPixels) * 100).toFixed(1)}%</div>
-                <div className="text-sm">Healthy Coverage</div>
+              <div className="text-center sm:text-right bg-white bg-opacity-50 rounded-lg p-2 sm:p-0 sm:bg-transparent w-full sm:w-auto">
+                <div className="text-2xl sm:text-3xl font-bold">{((ndviStats.healthyPixels / ndviStats.validPixels) * 100).toFixed(1)}%</div>
+                <div className="text-xs sm:text-sm">Healthy Coverage</div>
               </div>
             )}
           </div>
@@ -211,15 +208,15 @@ export default function SatelliteNDVI({ propertyId, propertyName }) {
         <div>
           {/* NDVI Health Scale - pH Style */}
           {ndviStats && (
-            <div className="bg-white rounded-xl shadow-2xl p-8 mb-6">
-              <h3 className="text-2xl font-bold mb-6 text-center text-gray-800">
+            <div className="bg-white rounded-xl shadow-lg p-4 sm:p-8 mb-6 overflow-hidden">
+              <h3 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-center text-gray-800">
                 🌱 Crop Health Indicator
               </h3>
-              
+
               {/* pH-Style Scale */}
               <div className="relative">
                 {/* Scale Bar */}
-                <div className="h-16 rounded-full overflow-hidden shadow-lg flex">
+                <div className="h-10 sm:h-16 rounded-full overflow-hidden shadow-lg flex">
                   <div className="flex-1 bg-gradient-to-r from-red-500 to-red-400"></div>
                   <div className="flex-1 bg-gradient-to-r from-red-400 to-orange-400"></div>
                   <div className="flex-1 bg-gradient-to-r from-orange-400 to-yellow-400"></div>
@@ -228,7 +225,7 @@ export default function SatelliteNDVI({ propertyId, propertyName }) {
                   <div className="flex-1 bg-gradient-to-r from-green-500 to-green-600"></div>
                   <div className="flex-1 bg-gradient-to-r from-green-600 to-emerald-700"></div>
                 </div>
-                
+
                 {/* Scale Labels */}
                 <div className="flex justify-between mt-3 text-sm font-semibold text-gray-600">
                   <span>Poor</span>
@@ -236,50 +233,49 @@ export default function SatelliteNDVI({ propertyId, propertyName }) {
                   <span>Good</span>
                   <span>Excellent</span>
                 </div>
-                
+
                 {/* Pointer/Indicator */}
-                <div 
-                  className="absolute -top-2 transform -translate-x-1/2 transition-all duration-500"
-                  style={{ 
+                <div
+                  className="absolute -top-1 sm:-top-2 transform -translate-x-1/2 transition-all duration-500"
+                  style={{
                     left: `${Math.max(5, Math.min(95, ((ndviStats.mean + 1) / 2) * 100))}%`
                   }}
                 >
                   <div className="flex flex-col items-center">
-                    <div className="w-1 h-20 bg-gray-800 shadow-lg"></div>
-                    <div className="w-6 h-6 bg-gray-800 rounded-full border-4 border-white shadow-xl flex items-center justify-center -mt-1">
-                      <div className="w-2 h-2 bg-white rounded-full"></div>
-                    </div>
-                    <div className="mt-16 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-xl">
-                      <div className="text-center">
-                        <div className="text-xs font-semibold">Current NDVI</div>
-                        <div className="text-2xl font-bold">{ndviStats.mean.toFixed(3)}</div>
-                        <div className="text-xs mt-1">{healthStatus?.status}</div>
-                      </div>
+                    <div className="w-0.5 sm:w-1 h-12 sm:h-20 bg-gray-800 shadow-lg"></div>
+                    <div className="w-4 h-4 sm:w-6 sm:h-6 bg-gray-800 rounded-full border-2 sm:border-4 border-white shadow-xl flex items-center justify-center -mt-1">
+                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-white rounded-full"></div>
                     </div>
                   </div>
                 </div>
               </div>
-              
+
+              <div className="mt-4 bg-gray-800 text-white px-3 py-2 rounded-lg shadow-lg max-w-xs mx-auto text-center">
+                <div className="text-[10px] font-semibold uppercase tracking-wider">Current NDVI</div>
+                <div className="text-lg font-bold leading-none">{ndviStats.mean.toFixed(3)}</div>
+                <div className="text-[10px] mt-1 opacity-80">{healthStatus?.status}</div>
+              </div>
+
               {/* Land Type Info */}
-              <div className="mt-24 grid grid-cols-3 gap-4 text-center">
-                <div className="bg-green-50 rounded-lg p-4">
-                  <div className="text-3xl mb-2">🌾</div>
-                  <div className="font-bold text-green-700">Vegetation Health</div>
-                  <div className="text-2xl font-bold text-green-600 mt-2">
+              <div className="mt-8 grid grid-cols-3 gap-2 sm:gap-4 text-center">
+                <div className="bg-green-50 rounded-lg p-2 sm:p-4">
+                  <div className="text-xl sm:text-3xl mb-1 sm:mb-2">🌾</div>
+                  <div className="text-[10px] sm:text-sm font-bold text-green-700">Health</div>
+                  <div className="text-base sm:text-2xl font-bold text-green-600 mt-1">
                     {((ndviStats.healthyPixels / ndviStats.validPixels) * 100).toFixed(0)}%
                   </div>
                 </div>
-                <div className="bg-blue-50 rounded-lg p-4">
-                  <div className="text-3xl mb-2">📊</div>
-                  <div className="font-bold text-blue-700">NDVI Range</div>
-                  <div className="text-sm font-semibold text-blue-600 mt-2">
-                    {ndviStats.min.toFixed(2)} to {ndviStats.max.toFixed(2)}
+                <div className="bg-blue-50 rounded-lg p-2 sm:p-4">
+                  <div className="text-xl sm:text-3xl mb-1 sm:mb-2">📊</div>
+                  <div className="text-[10px] sm:text-sm font-bold text-blue-700">Range</div>
+                  <div className="text-[10px] sm:text-sm font-semibold text-blue-600 mt-1">
+                    {ndviStats.min.toFixed(2)}-{ndviStats.max.toFixed(2)}
                   </div>
                 </div>
-                <div className="bg-orange-50 rounded-lg p-4">
-                  <div className="text-3xl mb-2">⚠️</div>
-                  <div className="font-bold text-orange-700">Stressed Areas</div>
-                  <div className="text-2xl font-bold text-orange-600 mt-2">
+                <div className="bg-orange-50 rounded-lg p-2 sm:p-4">
+                  <div className="text-xl sm:text-3xl mb-1 sm:mb-2">⚠️</div>
+                  <div className="text-[10px] sm:text-sm font-bold text-orange-700">Stress</div>
+                  <div className="text-base sm:text-2xl font-bold text-orange-600 mt-1">
                     {((ndviStats.stressedPixels / ndviStats.validPixels) * 100).toFixed(0)}%
                   </div>
                 </div>
@@ -349,8 +345,8 @@ export default function SatelliteNDVI({ propertyId, propertyName }) {
                   What is NDVI?
                 </h5>
                 <p className="text-sm text-gray-700 leading-relaxed">
-                  <strong>NDVI</strong> (Normalized Difference Vegetation Index) measures plant health by analyzing 
-                  how plants reflect near-infrared and red light. Values range from <strong>-1 to +1</strong>, 
+                  <strong>NDVI</strong> (Normalized Difference Vegetation Index) measures plant health by analyzing
+                  how plants reflect near-infrared and red light. Values range from <strong>-1 to +1</strong>,
                   where higher values indicate healthier, denser vegetation.
                 </p>
                 <div className="mt-4 pt-4 border-t border-blue-200">
@@ -372,7 +368,7 @@ export default function SatelliteNDVI({ propertyId, propertyName }) {
       {activeView === 'satellite' && satelliteImage && (
         <div>
           <h3 className="text-xl font-semibold mb-4">True Color Satellite Image</h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <img
@@ -397,7 +393,7 @@ export default function SatelliteNDVI({ propertyId, propertyName }) {
               <div className="mt-4 bg-green-50 border border-green-200 rounded p-4">
                 <h5 className="font-semibold mb-2">💡 Pro Tip:</h5>
                 <p className="text-sm text-gray-700">
-                  Use <strong>NDVI analysis</strong> for accurate crop health assessment. 
+                  Use <strong>NDVI analysis</strong> for accurate crop health assessment.
                   The true color image is useful for visual inspection of field conditions.
                 </p>
               </div>
@@ -416,7 +412,7 @@ export default function SatelliteNDVI({ propertyId, propertyName }) {
           <p className="text-gray-600 mb-4">
             High-resolution satellite imagery powered by Google Maps
           </p>
-          <SatelliteMapView 
+          <SatelliteMapView
             propertyId={propertyId}
             propertyName={propertyName}
             coordinates={propertyData.location.coordinates}
@@ -427,7 +423,7 @@ export default function SatelliteNDVI({ propertyId, propertyName }) {
               About Google Maps View
             </h5>
             <p className="text-sm text-gray-700">
-              This interactive map uses <strong>Google Maps satellite imagery</strong> for better zoom levels 
+              This interactive map uses <strong>Google Maps satellite imagery</strong> for better zoom levels
               and clarity. You can zoom in/out, switch map types, and explore the surrounding area of your field.
             </p>
           </div>

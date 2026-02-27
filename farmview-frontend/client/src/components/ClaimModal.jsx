@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  FaTimes, FaCloudRain, FaSun, FaBug, FaFire, FaWind, 
+import {
+  FaTimes, FaCloudRain, FaSun, FaBug, FaFire, FaWind,
   FaExclamationTriangle, FaCheckCircle, FaSatellite, FaRobot,
   FaSpinner, FaChartLine, FaMapMarkedAlt, FaCalendarAlt
 } from 'react-icons/fa';
@@ -13,10 +13,9 @@ export default function ClaimModal({ isOpen, onClose, policyId, propertyId }) {
   const [loading, setLoading] = useState(false);
   const [properties, setProperties] = useState([]);
   const [selectedProperty, setSelectedProperty] = useState(propertyId || '');
-  
+
   const [formData, setFormData] = useState({
     damageType: '',
-    damagePercent: 50,
     incidentDate: new Date().toISOString().split('T')[0],
     description: ''
   });
@@ -37,7 +36,10 @@ export default function ClaimModal({ isOpen, onClose, policyId, propertyId }) {
     if (isOpen && !propertyId) {
       fetchProperties();
     }
-  }, [isOpen]);
+    if (propertyId) {
+      setSelectedProperty(propertyId);
+    }
+  }, [isOpen, propertyId]);
 
   const fetchProperties = async () => {
     try {
@@ -52,7 +54,7 @@ export default function ClaimModal({ isOpen, onClose, policyId, propertyId }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!selectedProperty) {
       toast.error('Please select a property');
       return;
@@ -90,16 +92,15 @@ export default function ClaimModal({ isOpen, onClose, policyId, propertyId }) {
     try {
       const payload = {
         propertyId: selectedProperty,
-        claimedDamagePercent: formData.damagePercent,
         reason: formData.damageType,
         description: formData.description,
         incidentDate: formData.incidentDate
       };
 
       const res = await api.post('/claims/file', payload);
-      
+
       clearInterval(stageInterval);
-      
+
       if (res.data?.success) {
         setClaimResult(res.data.data);
         setStep(3);
@@ -121,7 +122,6 @@ export default function ClaimModal({ isOpen, onClose, policyId, propertyId }) {
     setStep(1);
     setFormData({
       damageType: '',
-      damagePercent: 50,
       incidentDate: new Date().toISOString().split('T')[0],
       description: ''
     });
@@ -197,7 +197,7 @@ export default function ClaimModal({ isOpen, onClose, policyId, propertyId }) {
                       <option value="">Choose a property...</option>
                       {properties.map((prop) => (
                         <option key={prop._id} value={prop._id}>
-                          {prop.propertyName} - {prop.currentCrop} ({prop.area} hectares)
+                          {prop.propertyName} - {prop.currentCrop} ({typeof prop.area === 'object' ? prop.area.value : prop.area} {typeof prop.area === 'object' ? prop.area.unit : 'hectares'})
                         </option>
                       ))}
                     </select>
@@ -216,11 +216,10 @@ export default function ClaimModal({ isOpen, onClose, policyId, propertyId }) {
                         key={type.id}
                         type="button"
                         onClick={() => setFormData({ ...formData, damageType: type.id })}
-                        className={`p-4 rounded-xl border-2 transition-all ${
-                          formData.damageType === type.id
-                            ? `border-${type.color}-500 bg-${type.color}-50 shadow-md`
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
+                        className={`p-4 rounded-xl border-2 transition-all ${formData.damageType === type.id
+                          ? `border-${type.color}-500 bg-${type.color}-50 shadow-md`
+                          : 'border-gray-200 hover:border-gray-300'
+                          }`}
                       >
                         <div className={`text-3xl mb-2 text-${type.color}-600`}>
                           {type.icon}
@@ -233,28 +232,20 @@ export default function ClaimModal({ isOpen, onClose, policyId, propertyId }) {
                   </div>
                 </div>
 
-                {/* Damage Percentage Slider */}
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3">
-                    <FaChartLine className="inline mr-2 text-primary-600" />
-                    Estimated Damage Percentage: {formData.damagePercent}%
-                  </label>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    step="5"
-                    value={formData.damagePercent}
-                    onChange={(e) => setFormData({ ...formData, damagePercent: parseInt(e.target.value) })}
-                    className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-600"
-                  />
-                  <div className="flex justify-between text-xs text-gray-500 mt-2">
-                    <span>0%</span>
-                    <span>25%</span>
-                    <span>50%</span>
-                    <span>75%</span>
-                    <span>100%</span>
+                {/* Automated Analysis Notice */}
+                <div className="bg-purple-50 border-2 border-purple-200 p-5 rounded-2xl">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="bg-purple-600 p-2 rounded-lg text-white">
+                      <FaSatellite className="text-xl" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-purple-900">Automated Damage Assessment</h4>
+                      <p className="text-xs text-purple-700">Powered by GeoAI & Sentinel-2</p>
+                    </div>
                   </div>
+                  <p className="text-sm text-gray-700 leading-relaxed italic">
+                    "You don't need to estimate the damage. Our GeoAI will automatically analyze before-and-after satellite imagery of your field to calculate the exact damage percentage for your claim."
+                  </p>
                 </div>
 
                 {/* Incident Date */}
@@ -294,8 +285,8 @@ export default function ClaimModal({ isOpen, onClose, policyId, propertyId }) {
                     <div>
                       <h4 className="font-semibold text-blue-900 mb-1">GeoAI Verification</h4>
                       <p className="text-sm text-blue-800">
-                        Your claim will be automatically verified using satellite imagery (NDVI analysis). 
-                        This ensures fast and accurate processing without manual inspection. 
+                        Your claim will be automatically verified using satellite imagery (NDVI analysis).
+                        This ensures fast and accurate processing without manual inspection.
                         Typical processing time: <strong>30-60 seconds</strong>.
                       </p>
                     </div>

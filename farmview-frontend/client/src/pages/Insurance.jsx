@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
+import {
   FaShieldAlt, FaCheckCircle, FaClock, FaTimesCircle, FaPlus,
   FaCalendarAlt, FaMoneyBillWave, FaFileContract, FaExclamationCircle
 } from 'react-icons/fa';
@@ -19,18 +19,19 @@ export default function Insurance() {
   const [showForm, setShowForm] = useState(false);
   const [claimModalOpen, setClaimModalOpen] = useState(false);
   const [selectedPolicyForClaim, setSelectedPolicyForClaim] = useState(null);
-  const [form, setForm] = useState({ 
-    policyNumber: '', 
-    policyType: 'Crop Insurance', 
-    providerName: '', 
+  const [expandedPolicy, setExpandedPolicy] = useState(null);
+  const [form, setForm] = useState({
+    policyNumber: '',
+    policyType: 'Crop Insurance',
+    providerName: '',
     providerContact: '',
     providerEmail: '',
-    coverageAmount: '', 
-    premiumAmount: '', 
+    coverageAmount: '',
+    premiumAmount: '',
     premiumFrequency: 'Annual',
-    startDate: '', 
-    endDate: '', 
-    propertyId: '' 
+    startDate: '',
+    endDate: '',
+    propertyId: ''
   });
 
   useEffect(() => { fetchPolicies(); }, []);
@@ -76,20 +77,21 @@ export default function Insurance() {
       const res = await api.post('/insurance', payload);
       if (res.data?.success) {
         toast.success('Insurance policy created!');
-        setForm({ 
-          policyNumber: '', 
-          policyType: 'Crop Insurance', 
-          providerName: '', 
+        setForm({
+          policyNumber: '',
+          policyType: 'Crop Insurance',
+          providerName: '',
           providerContact: '',
           providerEmail: '',
-          coverageAmount: '', 
-          premiumAmount: '', 
+          coverageAmount: '',
+          premiumAmount: '',
           premiumFrequency: 'Annual',
-          startDate: '', 
-          endDate: '', 
-          propertyId: '' 
+          startDate: '',
+          endDate: '',
+          propertyId: ''
         });
         setShowForm(false);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         fetchPolicies();
       }
     } catch (err) {
@@ -151,10 +153,10 @@ export default function Insurance() {
                 <div className="card bg-white p-6">
                   <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center"><FaFileContract className="mr-2 text-purple-600" />Create New Policy</h2>
                   <form onSubmit={handleCreate} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><label className="block text-sm font-medium text-gray-700 mb-2">Policy Number *</label><input placeholder="e.g., CROP-2025-001234" value={form.policyNumber} onChange={e => setForm({...form, policyNumber: e.target.value})} className="input-field" required /></div>
+                    <div><label className="block text-sm font-medium text-gray-700 mb-2">Policy Number *</label><input placeholder="e.g., CROP-2025-001234" value={form.policyNumber} onChange={e => setForm({ ...form, policyNumber: e.target.value })} className="input-field" required /></div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Policy Type *</label>
-                      <select value={form.policyType} onChange={e => setForm({...form, policyType: e.target.value})} className="input-field" required>
+                      <select value={form.policyType} onChange={e => setForm({ ...form, policyType: e.target.value })} className="input-field" required>
                         <option value="Crop Insurance">Crop Insurance</option>
                         <option value="Weather-Based Insurance">Weather-Based Insurance</option>
                         <option value="Livestock Insurance">Livestock Insurance</option>
@@ -163,23 +165,23 @@ export default function Insurance() {
                         <option value="Other">Other</option>
                       </select>
                     </div>
-                    <div><label className="block text-sm font-medium text-gray-700 mb-2">Insurance Provider Name *</label><input placeholder="e.g., Agriculture Insurance Company" value={form.providerName} onChange={e => setForm({...form, providerName: e.target.value})} className="input-field" required /></div>
-                    <div><label className="block text-sm font-medium text-gray-700 mb-2">Provider Contact</label><input placeholder="e.g., +91 9876543210" value={form.providerContact} onChange={e => setForm({...form, providerContact: e.target.value})} className="input-field" /></div>
-                    <div><label className="block text-sm font-medium text-gray-700 mb-2">Provider Email</label><input type="email" placeholder="e.g., support@insurance.com" value={form.providerEmail} onChange={e => setForm({...form, providerEmail: e.target.value})} className="input-field" /></div>
-                    <div><label className="block text-sm font-medium text-gray-700 mb-2">Coverage Amount (₹) *</label><input type="number" placeholder="e.g., 500000" value={form.coverageAmount} onChange={e => setForm({...form, coverageAmount: e.target.value})} className="input-field" required /></div>
-                    <div><label className="block text-sm font-medium text-gray-700 mb-2">Premium Amount (₹) *</label><input type="number" placeholder="e.g., 15000" value={form.premiumAmount} onChange={e => setForm({...form, premiumAmount: e.target.value})} className="input-field" required /></div>
+                    <div><label className="block text-sm font-medium text-gray-700 mb-2">Insurance Provider Name *</label><input placeholder="e.g., Agriculture Insurance Company" value={form.providerName} onChange={e => setForm({ ...form, providerName: e.target.value })} className="input-field" required /></div>
+                    <div><label className="block text-sm font-medium text-gray-700 mb-2">Provider Contact</label><input placeholder="e.g., +91 9876543210" value={form.providerContact} onChange={e => setForm({ ...form, providerContact: e.target.value })} className="input-field" /></div>
+                    <div><label className="block text-sm font-medium text-gray-700 mb-2">Provider Email</label><input type="email" placeholder="e.g., support@insurance.com" value={form.providerEmail} onChange={e => setForm({ ...form, providerEmail: e.target.value })} className="input-field" /></div>
+                    <div><label className="block text-sm font-medium text-gray-700 mb-2">Coverage Amount (₹) *</label><input type="number" placeholder="e.g., 500000" value={form.coverageAmount} onChange={e => setForm({ ...form, coverageAmount: e.target.value })} className="input-field" required /></div>
+                    <div><label className="block text-sm font-medium text-gray-700 mb-2">Premium Amount (₹) *</label><input type="number" placeholder="e.g., 15000" value={form.premiumAmount} onChange={e => setForm({ ...form, premiumAmount: e.target.value })} className="input-field" required /></div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Premium Frequency *</label>
-                      <select value={form.premiumFrequency} onChange={e => setForm({...form, premiumFrequency: e.target.value})} className="input-field" required>
+                      <select value={form.premiumFrequency} onChange={e => setForm({ ...form, premiumFrequency: e.target.value })} className="input-field" required>
                         <option value="Annual">Annual</option>
                         <option value="Semi-Annual">Semi-Annual</option>
                         <option value="Quarterly">Quarterly</option>
                         <option value="One-Time">One-Time</option>
                       </select>
                     </div>
-                    <div><label className="block text-sm font-medium text-gray-700 mb-2">Property ID (Optional)</label><input placeholder="Link to property" value={form.propertyId} onChange={e => setForm({...form, propertyId: e.target.value})} className="input-field" /></div>
-                    <div><label className="block text-sm font-medium text-gray-700 mb-2">Start Date *</label><input type="date" value={form.startDate} onChange={e => setForm({...form, startDate: e.target.value})} className="input-field" required /></div>
-                    <div><label className="block text-sm font-medium text-gray-700 mb-2">End Date *</label><input type="date" value={form.endDate} onChange={e => setForm({...form, endDate: e.target.value})} className="input-field" required /></div>
+                    <div><label className="block text-sm font-medium text-gray-700 mb-2">Property ID (Optional)</label><input placeholder="Link to property" value={form.propertyId} onChange={e => setForm({ ...form, propertyId: e.target.value })} className="input-field" /></div>
+                    <div><label className="block text-sm font-medium text-gray-700 mb-2">Start Date *</label><input type="date" value={form.startDate} onChange={e => setForm({ ...form, startDate: e.target.value })} className="input-field" required /></div>
+                    <div><label className="block text-sm font-medium text-gray-700 mb-2">End Date *</label><input type="date" value={form.endDate} onChange={e => setForm({ ...form, endDate: e.target.value })} className="input-field" required /></div>
                     <div className="md:col-span-2 flex gap-4">
                       <button type="submit" disabled={creating} className="btn-primary px-6 py-3 disabled:opacity-50 flex items-center space-x-2">{creating ? <><div className="spinner w-5 h-5" /><span>Creating...</span></> : <><FaPlus /><span>Create Policy</span></>}</button>
                       <button type="button" onClick={() => setShowForm(false)} className="btn-outline px-6 py-3">Cancel</button>
@@ -204,24 +206,70 @@ export default function Insurance() {
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {policies.map((policy, index) => (
-                  <motion.div key={policy._id} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: index * 0.05 }} whileHover={{ y: -5, scale: 1.02 }} className="p-6 bg-gradient-to-br from-white to-purple-50 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 border border-purple-100">
+                  <motion.div key={policy._id} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: index * 0.05 }} whileHover={{ y: -5 }} className="p-6 bg-white rounded-xl shadow-md border border-purple-100 flex flex-col">
                     <div className="flex justify-between items-start mb-4">
-                      <div><h3 className="text-xl font-bold text-gray-800 mb-1">{policy.policyNumber}</h3><p className="text-gray-600">{policy.provider?.name || policy.provider || 'N/A'}</p></div>
-                      <span className={`flex items-center space-x-1 px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(policy.status)}`}>{getStatusIcon(policy.status)}<span>{policy.status || 'Active'}</span></span>
+                      <div>
+                        <h3 className="text-xl font-bold text-gray-800 mb-1">{policy.policyNumber}</h3>
+                        <p className="text-gray-500 text-sm font-semibold uppercase tracking-wider">{policy.provider?.name || policy.provider || 'N/A'}</p>
+                      </div>
+                      <span className={`flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-tighter ${getStatusColor(policy.status)}`}>
+                        {getStatusIcon(policy.status)}
+                        <span>{policy.status || 'Active'}</span>
+                      </span>
                     </div>
-                    <div className="space-y-3">
-                      <div className="flex items-center space-x-2 text-gray-700"><FaFileContract className="text-purple-600" /><span className="text-sm"><span className="font-medium">Type:</span> {policy.policyType}</span></div>
-                      <div className="flex items-center space-x-2 text-gray-700"><FaMoneyBillWave className="text-green-600" /><span className="text-sm"><span className="font-medium">Coverage:</span> ₹{Number(policy.coverageAmount).toLocaleString('en-IN')}</span></div>
-                      <div className="flex items-center space-x-2 text-gray-700"><FaMoneyBillWave className="text-blue-600" /><span className="text-sm"><span className="font-medium">Premium:</span> ₹{Number(policy.premium?.amount || policy.premium || 0).toLocaleString('en-IN')}/{policy.premium?.frequency || 'year'}</span></div>
-                      <div className="flex items-center space-x-2 text-gray-700"><FaCalendarAlt className="text-orange-600" /><span className="text-sm"><span className="font-medium">Valid:</span> {new Date(policy.startDate).toLocaleDateString()} - {new Date(policy.endDate).toLocaleDateString()}</span></div>
+
+                    <div className="space-y-3 mb-6 flex-grow">
+                      <div className="flex items-center space-x-2 text-gray-700 bg-purple-50 p-2 rounded-lg border border-purple-100">
+                        <FaFileContract className="text-purple-600" />
+                        <span className="text-sm"><strong>Type:</strong> {policy.policyType}</span>
+                      </div>
+                      <div className="flex items-center space-x-2 text-gray-700">
+                        <FaMoneyBillWave className="text-green-600" />
+                        <span className="text-sm font-bold">Coverage: ₹{Number(policy.coverageAmount).toLocaleString('en-IN')}</span>
+                      </div>
+                      <div className="flex items-center space-x-2 text-gray-700">
+                        <FaMoneyBillWave className="text-blue-600" />
+                        <span className="text-sm"><strong>Premium:</strong> ₹{Number(policy.premium?.amount || policy.premium || 0).toLocaleString('en-IN')}/{policy.premium?.frequency || 'year'}</span>
+                      </div>
+                      <div className="flex items-center space-x-2 text-gray-700">
+                        <FaCalendarAlt className="text-orange-600" />
+                        <span className="text-sm font-medium italic">Valid till {new Date(policy.endDate).toLocaleDateString()}</span>
+                      </div>
+
+                      {/* Expanded Details */}
+                      <AnimatePresence>
+                        {expandedPolicy === policy._id && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="pt-3 border-t border-dashed border-gray-200 mt-3 space-y-2"
+                          >
+                            <p className="text-xs text-gray-500 font-bold uppercase">Provider Details</p>
+                            <div className="text-sm text-gray-600">
+                              <p>📞 {policy.provider?.contactNumber || 'No contact provided'}</p>
+                              <p>📧 {policy.provider?.email || 'No email provided'}</p>
+                            </div>
+                            <div className="text-xs text-gray-400 bg-gray-50 p-2 rounded mt-2">
+                              Policy ID: {policy._id}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
-                    <div className="mt-4 pt-4 border-t border-purple-200 flex gap-2">
-                      <button className="btn-primary flex-1 py-2 text-sm">View Details</button>
-                      <button 
-                        onClick={() => handleFileClaimClick(policy)}
-                        className="btn-outline flex-1 py-2 text-sm hover:bg-red-50 hover:border-red-500 hover:text-red-600 transition-all flex items-center justify-center space-x-1"
+
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setExpandedPolicy(expandedPolicy === policy._id ? null : policy._id)}
+                        className="btn-primary flex-1 py-2 text-xs font-black uppercase tracking-widest shadow-lg shadow-primary-100 active:scale-95 transition-transform"
                       >
-                        <FaExclamationCircle />
+                        {expandedPolicy === policy._id ? 'Close Details' : 'View Details'}
+                      </button>
+                      <button
+                        onClick={() => handleFileClaimClick(policy)}
+                        className="btn-outline flex-1 py-2 text-xs font-black uppercase tracking-widest hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all flex items-center justify-center space-x-1"
+                      >
+                        <FaExclamationCircle className="text-sm" />
                         <span>File Claim</span>
                       </button>
                     </div>
@@ -238,7 +286,7 @@ export default function Insurance() {
         isOpen={claimModalOpen}
         onClose={handleClaimModalClose}
         policyId={selectedPolicyForClaim?._id}
-        propertyId={selectedPolicyForClaim?.property}
+        propertyId={selectedPolicyForClaim?.property?._id || selectedPolicyForClaim?.property}
       />
 
       <Footer />

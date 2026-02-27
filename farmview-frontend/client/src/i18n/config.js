@@ -11,10 +11,13 @@ const resources = {
         dashboard: 'Dashboard',
         documents: 'Documents',
         property: 'Property',
+        profile: 'Profile',
+        logout: 'Logout',
+        calculator: 'Crop Calculator',
         insurance: 'Insurance',
         weather: 'Weather',
-        profile: 'Profile',
-        logout: 'Logout'
+        claims: 'Claims',
+        aiAdvisor: 'AI Advisor'
       },
       // Auth
       auth: {
@@ -55,19 +58,32 @@ const resources = {
         download: 'Download',
         submit: 'Submit',
         loading: 'Loading...',
+        search: 'Search',
+        selectCrop: 'Select Crop',
         success: 'Success',
         error: 'Error',
         noData: 'No data available',
-        search: 'Search',
         filter: 'Filter',
         actions: 'Actions'
       },
       // Documents
       documents: {
-        title: 'My Documents',
-        upload: 'Upload Document',
-        type: 'Document Type',
-        name: 'Document Name',
+        title: 'Documents',
+        subtitle: 'Manage all your farm-related documents securely',
+        yourDocuments: 'Your Documents',
+        noDocuments: 'No documents found',
+        noDocumentsUploaded: 'No documents uploaded yet',
+        uploadDocument: 'Upload Document',
+        documentName: 'Document Name',
+        documentType: 'Document Type',
+        searchDocuments: 'Search documents...',
+        aiVerification: 'AI Document Verification',
+        fraudPrevention: 'Automated fraud prevention',
+        startAiVerification: 'Start AI Verification',
+        manualUpload: 'Manual Upload',
+        uploading: 'Uploading...',
+        download: 'Download',
+        aiVerified: 'AI Verified',
         category: 'Category',
         status: 'Status',
         uploadedOn: 'Uploaded On',
@@ -88,7 +104,41 @@ const resources = {
         location: 'Location',
         soilType: 'Soil Type',
         currentCrop: 'Current Crop',
-        drawOnMap: 'Draw on Map'
+        drawOnMap: 'Draw on Map',
+        searchLocation: 'Search Location',
+        calculatedArea: 'Calculated Area',
+        drawPolygon: 'Draw polygon on map',
+        cropSuggestions: 'Choose from 1000+ crops or type to search',
+        irrigationType: 'Irrigation Type',
+        viewSatellite: 'View Satellite Analysis',
+        noProperties: 'No Properties Yet',
+        startByCreating: 'Start by creating your first property below',
+        propertyDetails: 'Property Details',
+        verified: 'Verified',
+        pendingVerification: 'Pending Verification',
+        noVerifiedDocs: 'No Verified Documents',
+        verifyDocsWarning: 'We recommend verifying your land documents using AI for fraud prevention.',
+        verifyNow: 'Verify Documents Now',
+        submitting: 'Submitting...',
+        createProperty: 'Create Property',
+        cropRecommendations: 'Get Crop Recommendations (1000+ Crops)',
+        gettingRecommendations: 'Getting Recommendations...',
+        topRecommended: 'Top Recommended Crops',
+        soilTypes: {
+          alluvial: 'Alluvial',
+          black: 'Black',
+          red: 'Red',
+          laterite: 'Laterite',
+          desert: 'Desert',
+          mountain: 'Mountain',
+          other: 'Other'
+        },
+        irrigationTypes: {
+          rainfed: 'Rainfed',
+          drip: 'Drip',
+          sprinkler: 'Sprinkler',
+          other: 'Other'
+        }
       },
       // Insurance
       insurance: {
@@ -104,7 +154,23 @@ const resources = {
       },
       // Weather
       weather: {
-        title: 'Weather',
+        title: 'Weather Monitoring',
+        subtitle: 'Real-time weather and AI predictions',
+        yourProperties: 'Your Properties',
+        noProperties: 'No properties found',
+        addPropertyFirst: 'Add a property first',
+        selectProperty: 'Select a property',
+        tapToLoad: 'Tap on a field on the left to load weather',
+        aiPrediction: 'AI Crop Prediction',
+        runPrediction: 'Run Prediction',
+        predicting: 'Predicting...',
+        riskAssessment: 'Overall Risk Assessment',
+        aiConfidence: 'AI Confidence',
+        activeAlerts: 'Active Alerts',
+        recommendations: 'Actionable Recommendations',
+        scientificBreakdown: 'Scientific Risk Breakdown',
+        weatherLoaded: 'Weather loaded!',
+        predictionCompleted: 'ML prediction completed!',
         current: 'Current Weather',
         forecast: 'Forecast',
         temperature: 'Temperature',
@@ -168,6 +234,33 @@ const resources = {
           createAccount: 'Create Free Account',
           learnMore: 'Learn More'
         }
+      },
+      tools: {
+        cropIntelligence: 'Crop Intelligence',
+        cropIntelligenceDesc: 'AI-powered crop analysis',
+        cropCalculator: 'Crop Calculator',
+        cropCalculatorDesc: 'Yield & profit estimator',
+        activeFarmer: 'Active Farmer',
+        status: 'Status',
+        active: 'Active',
+        startByAdding: 'Start by adding your property or uploading documents'
+      },
+      calculator: {
+        title: 'Quick Calculator',
+        cropArea: 'Crop & Area (Hectares)',
+        yield: 'Yield (Q/Ha)',
+        price: 'Price (₹/Q)',
+        profit: 'Estimated Profit',
+        roi: 'ROI',
+        reset: 'Reset',
+        fullAnalysis: 'Full Analysis',
+        crops: {
+          wheat: 'Wheat',
+          rice: 'Rice (Paddy)',
+          cotton: 'Cotton',
+          sugarcane: 'Sugarcane',
+          maize: 'Maize'
+        }
       }
     }
   },
@@ -177,10 +270,13 @@ const resources = {
         dashboard: 'डैशबोर्ड',
         documents: 'दस्तावेज़',
         property: 'संपत्ति',
+        profile: 'प्रोफ़ाइल',
+        logout: 'लॉग आउट',
+        calculator: 'फसल कैलकुलेटर',
         insurance: 'बीमा',
         weather: 'मौसम',
-        profile: 'प्रोफ़ाइल',
-        logout: 'लॉग आउट'
+        claims: 'दावे',
+        aiAdvisor: 'AI सलाहकार'
       },
       auth: {
         login: 'लॉगिन',
@@ -218,21 +314,31 @@ const resources = {
         download: 'डाउनलोड करें',
         submit: 'जमा करें',
         loading: 'लोड हो रहा है...',
+        search: 'खोजें',
+        selectCrop: 'फसल चुनें',
         success: 'सफलता',
         error: 'त्रुटि',
         noData: 'कोई डेटा उपलब्ध नहीं',
-        search: 'खोजें',
         filter: 'फ़िल्टर',
         actions: 'क्रियाएं'
       },
       documents: {
-        title: 'मेरे दस्तावेज़',
-        upload: 'दस्तावेज़ अपलोड करें',
-        type: 'दस्तावेज़ प्रकार',
-        name: 'दस्तावेज़ का नाम',
-        category: 'श्रेणी',
-        status: 'स्थिति',
-        uploadedOn: 'अपलोड की तारीख',
+        title: 'दस्तावेज़',
+        subtitle: 'अपने खेत से संबंधित सभी दस्तावेजों को सुरक्षित रूप से प्रबंधित करें',
+        yourDocuments: 'आपके दस्तावेज़',
+        noDocuments: 'कोई दस्तावेज़ नहीं मिला',
+        noDocumentsUploaded: 'अभी तक कोई दस्तावेज़ अपलोड नहीं किया गया है',
+        uploadDocument: 'दस्तावेज़ अपलोड करें',
+        documentName: 'दस्तावेज़ का नाम',
+        documentType: 'दस्तावेज़ का प्रकार',
+        searchDocuments: 'दस्तावेज़ खोजें...',
+        aiVerification: 'AI दस्तावेज़ सत्यापन',
+        fraudPrevention: 'स्वचालित धोखाधड़ी रोकथाम',
+        startAiVerification: 'AI सत्यापन शुरू करें',
+        manualUpload: 'मैन्युअल अपलोड',
+        uploading: 'अपलोड किया जा रहा है...',
+        download: 'डाउनलोड करें',
+        aiVerified: 'AI सत्यापित',
         types: {
           panCard: 'पैन कार्ड',
           aadhaar: 'आधार कार्ड',
@@ -249,7 +355,41 @@ const resources = {
         location: 'स्थान',
         soilType: 'मिट्टी का प्रकार',
         currentCrop: 'वर्तमान फसल',
-        drawOnMap: 'मानचित्र पर बनाएं'
+        drawOnMap: 'मानचित्र पर बनाएं',
+        searchLocation: 'स्थान खोजें',
+        calculatedArea: 'परिकलित क्षेत्रफल',
+        drawPolygon: 'मानचित्र पर बहुभुज बनाएं',
+        cropSuggestions: '1000+ फसलों में से चुनें या खोजने के लिए टाइप करें',
+        irrigationType: 'सिंचाई का प्रकार',
+        viewSatellite: 'सैटेलाइट विश्लेषण देखें',
+        noProperties: 'अभी तक कोई संपत्ति नहीं',
+        startByCreating: 'नीचे अपनी पहली संपत्ति बनाकर शुरू करें',
+        propertyDetails: 'संपत्ति का विवरण',
+        verified: 'सत्यापित',
+        pendingVerification: 'सत्यापन लंबित',
+        noVerifiedDocs: 'कोई सत्यापित दस्तावेज़ नहीं',
+        verifyDocsWarning: 'हम धोखाधड़ी को रोकने के लिए AI का उपयोग करके आपके भूमि दस्तावेज़ों को सत्यापित करने की सलाह देते हैं।',
+        verifyNow: 'अभी दस्तावेज़ सत्यापित करें',
+        submitting: 'जमा किया जा रहा है...',
+        createProperty: 'संपत्ति बनाएं',
+        cropRecommendations: 'फसल सिफारिशें प्राप्त करें (1000+ फसलें)',
+        gettingRecommendations: 'सिफारिशें प्राप्त की जा रही हैं...',
+        topRecommended: 'शीर्ष अनुशंसित फसलें',
+        soilTypes: {
+          alluvial: 'जलोढ़ (Alluvial)',
+          black: 'काली (Black)',
+          red: 'लाल (Red)',
+          laterite: 'लेटराइट (Laterite)',
+          desert: 'रेगिस्तानी (Desert)',
+          mountain: 'पहाड़ी (Mountain)',
+          other: 'अन्य'
+        },
+        irrigationTypes: {
+          rainfed: 'वर्षा आधारित (Rainfed)',
+          drip: 'ड्रिप (Drip)',
+          sprinkler: 'स्प्रिंकलर (Sprinkler)',
+          other: 'अन्य'
+        }
       },
       insurance: {
         title: 'बीमा',
@@ -263,7 +403,23 @@ const resources = {
         claimHistory: 'दावा इतिहास'
       },
       weather: {
-        title: 'मौसम',
+        title: 'मौसम की निगरानी',
+        subtitle: 'रीयल-टाइम मौसम और AI भविष्यवाणियां',
+        yourProperties: 'आपकी संपत्तियां',
+        noProperties: 'कोई संपत्ति नहीं मिली',
+        addPropertyFirst: 'पहले एक संपत्ति जोड़ें',
+        selectProperty: 'एक संपत्ति चुनें',
+        tapToLoad: 'मौसम लोड करने के लिए बाईं ओर एक फ़ील्ड पर टैप करें',
+        aiPrediction: 'AI फसल भविष्यवाणी',
+        runPrediction: 'भविष्यवाणी चलाएं',
+        predicting: 'भविष्यवाणी की जा रही है...',
+        riskAssessment: 'कुल जोखिम मूल्यांकन',
+        aiConfidence: 'AI आत्मविश्वास',
+        activeAlerts: 'सक्रिय चेतावनियां',
+        recommendations: 'कार्रवाई योग्य सिफारिशें',
+        scientificBreakdown: 'वैज्ञानिक जोखिम विश्लेषण',
+        weatherLoaded: 'मौसम लोड हो गया!',
+        predictionCompleted: 'ML भविष्यवाणी पूरी हो गई!',
         current: 'वर्तमान मौसम',
         forecast: 'पूर्वानुमान',
         temperature: 'तापमान',
@@ -318,7 +474,7 @@ const resources = {
           },
           smart: {
             title: 'स्मार्ट खेती',
-            desc: 'बेहतर उपज के लिए AI-संचालित अंतर्दृष्टि'
+            desc: 'बेहतर उपज के लिए AI-संचालित अंतर्दष्टि'
           }
         },
         cta: {
@@ -326,6 +482,33 @@ const resources = {
           subtitle: 'हजारों किसान पहले से ही उपज बढ़ाने और अपने निवेश की रक्षा के लिए FarmView AI का उपयोग कर रहे हैं',
           createAccount: 'मुफ्त खाता बनाएं',
           learnMore: 'और जानें'
+        }
+      },
+      tools: {
+        cropIntelligence: 'फसल बुद्धिमत्ता',
+        cropIntelligenceDesc: 'AI-संचालित फसल विश्लेषण',
+        cropCalculator: 'फसल कैलकुलेटर',
+        cropCalculatorDesc: 'उपज और लाभ अनुमानक',
+        activeFarmer: 'सक्रिय किसान',
+        status: 'स्थिति',
+        active: 'सक्रिय',
+        startByAdding: 'अपनी संपत्ति जोड़कर या दस्तावेज़ अपलोड करके शुरू करें'
+      },
+      calculator: {
+        title: 'त्वरित कैलकुलेटर',
+        cropArea: 'फसल और क्षेत्र (हेक्टेयर)',
+        yield: 'उपज (क्विंटल/हेक्टेयर)',
+        price: 'कीमत (₹/क्विंटल)',
+        profit: 'अनुमानित लाभ',
+        roi: 'निवेश पर प्रतिफल (ROI)',
+        reset: 'रीसेट',
+        fullAnalysis: 'पूर्ण विश्लेषण',
+        crops: {
+          wheat: 'गेहूं',
+          rice: 'चावल (धान)',
+          cotton: 'कपास',
+          sugarcane: 'गन्ना',
+          maize: 'मक्का'
         }
       }
     }

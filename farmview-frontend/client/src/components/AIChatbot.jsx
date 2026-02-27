@@ -2,9 +2,12 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaRobot, FaTimes, FaPaperPlane, FaLeaf } from 'react-icons/fa';
 import api from '../utils/api';
+import { useUIStore } from '../store/uiStore';
 
-export default function AIChatbot() {
-  const [isOpen, setIsOpen] = useState(false);
+export default function AIChatbot({ isPage = false }) {
+  const { isChatbotOpen, toggleChatbot } = useUIStore();
+  const shouldShow = isPage || isChatbotOpen;
+
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
@@ -78,65 +81,19 @@ export default function AIChatbot() {
 
   return (
     <>
-      {/* Floating Chat Button */}
-      <motion.button
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-green-500 to-emerald-600 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300"
-        style={{ width: '60px', height: '60px' }}
-      >
-        <AnimatePresence mode="wait">
-          {isOpen ? (
-            <motion.div
-              key="close"
-              initial={{ rotate: -90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: 90, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <FaTimes className="text-2xl" />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="robot"
-              initial={{ rotate: -90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: 90, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <FaRobot className="text-2xl" />
-            </motion.div>
-          )}
-        </AnimatePresence>
-        
-        {/* Notification Badge */}
-        {!isOpen && (
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold"
-          >
-            AI
-          </motion.div>
-        )}
-      </motion.button>
-
       {/* Chat Window */}
       <AnimatePresence>
-        {isOpen && (
+        {shouldShow && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            initial={isPage ? { opacity: 0 } : { opacity: 0, scale: 0.8, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 20 }}
+            exit={isPage ? { opacity: 0 } : { opacity: 0, scale: 0.8, y: 20 }}
             transition={{ duration: 0.3 }}
-            className="fixed bottom-24 right-6 z-50 w-96 h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden"
-            style={{ maxWidth: 'calc(100vw - 3rem)' }}
+            className={`${isPage ? 'w-full h-full' : 'fixed bottom-24 right-6 z-50 w-96 h-[600px] shadow-2xl'} bg-white rounded-2xl flex flex-col overflow-hidden`}
+            style={!isPage ? { maxWidth: 'calc(100vw - 3rem)' } : {}}
           >
             {/* Header */}
-            <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white p-4 flex items-center justify-between">
+            <div className={`bg-gradient-to-r from-green-500 to-emerald-600 text-white p-4 flex items-center justify-between ${isPage ? 'sm:p-6' : ''}`}>
               <div className="flex items-center space-x-3">
                 <div className="bg-white/20 p-2 rounded-full">
                   <FaRobot className="text-xl" />
@@ -146,14 +103,16 @@ export default function AIChatbot() {
                   <p className="text-xs text-green-100">Ask About Crops, Weather, and More!</p>
                 </div>
               </div>
-              <motion.button
-                whileHover={{ rotate: 90 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setIsOpen(false)}
-                className="text-white hover:bg-white/20 p-2 rounded-full transition"
-              >
-                <FaTimes />
-              </motion.button>
+              {!isPage && (
+                <motion.button
+                  whileHover={{ rotate: 90 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={toggleChatbot}
+                  className="text-white hover:bg-white/20 p-2 rounded-full transition"
+                >
+                  <FaTimes />
+                </motion.button>
+              )}
             </div>
 
             {/* Messages */}
@@ -170,11 +129,10 @@ export default function AIChatbot() {
                   className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[80%] p-3 rounded-2xl ${
-                      message.role === 'user'
-                        ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white'
-                        : 'bg-white text-gray-800 shadow-md'
-                    }`}
+                    className={`max-w-[80%] p-3 rounded-2xl ${message.role === 'user'
+                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white'
+                      : 'bg-white text-gray-800 shadow-md'
+                      }`}
                   >
                     {message.role === 'assistant' && (
                       <div className="flex items-center space-x-2 mb-2">
@@ -216,7 +174,7 @@ export default function AIChatbot() {
                   </div>
                 </motion.div>
               )}
-              
+
               <div ref={messagesEndRef} />
             </div>
 

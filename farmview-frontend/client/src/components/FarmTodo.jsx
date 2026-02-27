@@ -3,14 +3,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaCheck, FaTimes, FaPlus, FaTrash, FaEdit, FaFlag, FaCalendar, FaTasks } from 'react-icons/fa';
 import api from '../utils/api';
 import toast from 'react-hot-toast';
+import { useUIStore } from '../store/uiStore';
 
-export default function FarmTodo() {
-  const [isOpen, setIsOpen] = useState(false);
+export default function FarmTodo({ isPage = false }) {
+  const { isTodoOpen, toggleTodo } = useUIStore();
+  const shouldShow = isPage || isTodoOpen;
+
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingTodo, setEditingTodo] = useState(null);
-  
+
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -20,10 +23,10 @@ export default function FarmTodo() {
   });
 
   useEffect(() => {
-    if (isOpen) {
+    if (shouldShow) {
       fetchTodos();
     }
-  }, [isOpen]);
+  }, [shouldShow]);
 
   const fetchTodos = async () => {
     setLoading(true);
@@ -63,7 +66,7 @@ export default function FarmTodo() {
           toast.success('Task added!');
         }
       }
-      
+
       resetForm();
     } catch (error) {
       console.error('Submit todo error:', error);
@@ -76,7 +79,7 @@ export default function FarmTodo() {
       const response = await api.put(`/todos/${todo._id}`, {
         completed: !todo.completed
       });
-      
+
       if (response.data?.success) {
         setTodos(todos.map(t => t._id === todo._id ? response.data.data : t));
         toast.success(todo.completed ? 'Task reopened' : '🎉 Task completed!');
@@ -89,7 +92,7 @@ export default function FarmTodo() {
 
   const deleteTodo = async (id) => {
     if (!confirm('Delete this task?')) return;
-    
+
     try {
       await api.delete(`/todos/${id}`);
       setTodos(todos.filter(t => t._id !== id));
@@ -145,65 +148,19 @@ export default function FarmTodo() {
 
   return (
     <>
-      {/* Floating Todo Button */}
-      <motion.button
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-28 right-6 z-40 bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300"
-        style={{ width: '60px', height: '60px' }}
-      >
-        <AnimatePresence mode="wait">
-          {isOpen ? (
-            <motion.div
-              key="close"
-              initial={{ rotate: -90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: 90, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <FaTimes className="text-2xl" />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="tasks"
-              initial={{ rotate: -90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: 90, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <FaTasks className="text-2xl" />
-            </motion.div>
-          )}
-        </AnimatePresence>
-        
-        {/* Task Count Badge */}
-        {!isOpen && pendingTasks > 0 && (
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold"
-          >
-            {pendingTasks}
-          </motion.div>
-        )}
-      </motion.button>
-
       {/* Todo Panel */}
       <AnimatePresence>
-        {isOpen && (
+        {shouldShow && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            initial={isPage ? { opacity: 0 } : { opacity: 0, scale: 0.8, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 20 }}
+            exit={isPage ? { opacity: 0 } : { opacity: 0, scale: 0.8, y: 20 }}
             transition={{ duration: 0.3 }}
-            className="fixed bottom-40 right-6 z-40 w-96 h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden"
-            style={{ maxWidth: 'calc(100vw - 3rem)' }}
+            className={`${isPage ? 'w-full h-full min-h-[500px]' : 'fixed bottom-40 right-6 z-40 w-96 h-[600px] shadow-2xl overflow-hidden'} bg-white rounded-2xl flex flex-col`}
+            style={!isPage ? { maxWidth: 'calc(100vw - 3rem)' } : {}}
           >
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-4">
+            <div className={`bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-4 ${isPage ? 'sm:p-6' : ''}`}>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-3">
                   <div className="bg-white/20 p-2 rounded-full">
@@ -214,14 +171,16 @@ export default function FarmTodo() {
                     <p className="text-xs text-blue-100">Manage your daily activities</p>
                   </div>
                 </div>
-                <motion.button
-                  whileHover={{ rotate: 90 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => setIsOpen(false)}
-                  className="text-white hover:bg-white/20 p-2 rounded-full transition"
-                >
-                  <FaTimes />
-                </motion.button>
+                {!isPage && (
+                  <motion.button
+                    whileHover={{ rotate: 90 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={toggleTodo}
+                    className="text-white hover:bg-white/20 p-2 rounded-full transition"
+                  >
+                    <FaTimes />
+                  </motion.button>
+                )}
               </div>
 
               {/* Stats */}
@@ -270,7 +229,7 @@ export default function FarmTodo() {
                       className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                       required
                     />
-                    
+
                     <textarea
                       placeholder="Description (optional)"
                       value={formData.description}
@@ -353,22 +312,20 @@ export default function FarmTodo() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className={`bg-white border-l-4 ${
-                      todo.completed ? 'border-green-500 bg-gray-50' : 
+                    className={`bg-white border-l-4 ${todo.completed ? 'border-green-500 bg-gray-50' :
                       todo.priority === 'high' ? 'border-red-500' :
-                      todo.priority === 'medium' ? 'border-yellow-500' :
-                      'border-green-500'
-                    } rounded-lg p-3 shadow-sm`}
+                        todo.priority === 'medium' ? 'border-yellow-500' :
+                          'border-green-500'
+                      } rounded-lg p-3 shadow-sm`}
                   >
                     <div className="flex items-start space-x-3">
                       <motion.button
                         whileTap={{ scale: 0.9 }}
                         onClick={() => toggleComplete(todo)}
-                        className={`mt-1 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                          todo.completed 
-                            ? 'bg-green-500 border-green-500' 
-                            : 'border-gray-300 hover:border-blue-500'
-                        }`}
+                        className={`mt-1 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center ${todo.completed
+                          ? 'bg-green-500 border-green-500'
+                          : 'border-gray-300 hover:border-blue-500'
+                          }`}
                       >
                         {todo.completed && <FaCheck className="text-white text-xs" />}
                       </motion.button>
@@ -382,7 +339,7 @@ export default function FarmTodo() {
                             {todo.description && (
                               <p className="text-xs text-gray-600 mt-1">{todo.description}</p>
                             )}
-                            
+
                             <div className="flex items-center space-x-2 mt-2">
                               <span className={`text-xs px-2 py-1 rounded-full ${priorityColors[todo.priority]}`}>
                                 {todo.priority}

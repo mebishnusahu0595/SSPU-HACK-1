@@ -191,19 +191,16 @@ const CropIntelligence = () => {
   console.log('Current loadingProperties state:', loadingProperties);
   console.log('Properties array:', properties);
 
-  // TEMPORARILY DISABLED LOADING CHECK FOR DEBUGGING
-  // if (loadingProperties) {
-  //   console.log('Showing loading screen');
-  //   return (
-  //     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center">
-  //       <div className="text-center">
-  //         <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-600 mx-auto mb-4"></div>
-  //         <p className="text-xl text-gray-600">Loading properties...</p>
-  //         <p className="text-sm text-gray-500 mt-2">loadingProperties: {String(loadingProperties)}</p>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  if (loadingProperties) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-600 mx-auto mb-4"></div>
+          <p className="text-xl text-gray-600">Loading properties...</p>
+        </div>
+      </div>
+    );
+  }
 
   // No properties state
   if (!loadingProperties && properties.length === 0) {
@@ -246,21 +243,7 @@ const CropIntelligence = () => {
       position: 'relative',
       zIndex: 1
     }}>
-      {/* VISIBILITY TEST */}
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: 'red',
-        color: 'white',
-        padding: '20px',
-        zIndex: 9999,
-        fontSize: '24px',
-        fontWeight: 'bold'
-      }}>
-        🚨 TEST: IF YOU SEE THIS, COMPONENT IS RENDERING! Properties: {properties.length}
-      </div>
+
 
       <div className="max-w-7xl mx-auto">
         {/* Header */}
@@ -333,8 +316,8 @@ const CropIntelligence = () => {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex-1 min-w-[120px] px-4 py-4 font-medium transition ${activeTab === tab.id
-                    ? 'border-b-4 border-green-500 text-green-600'
-                    : 'text-gray-600 hover:text-green-600'
+                  ? 'border-b-4 border-green-500 text-green-600'
+                  : 'text-gray-600 hover:text-green-600'
                   }`}
               >
                 <span className="text-xl mr-2">{tab.icon}</span>
@@ -420,8 +403,8 @@ const CropIntelligence = () => {
                               <div className="flex justify-between items-start mb-2">
                                 <h4 className="font-bold text-gray-800">{issue.issue}</h4>
                                 <span className={`px-3 py-1 rounded-full text-sm ${issue.severity === 'High' ? 'bg-red-100 text-red-700' :
-                                    issue.severity === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
-                                      'bg-green-100 text-green-700'
+                                  issue.severity === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
+                                    'bg-green-100 text-green-700'
                                   }`}>
                                   {issue.severity}
                                 </span>
@@ -653,8 +636,8 @@ const CropIntelligence = () => {
                   <div className="space-y-6">
                     {/* Health Status */}
                     <div className={`border-2 rounded-xl p-6 ${issues.healthStatus === 'Healthy' ? 'bg-green-50 border-green-300' :
-                        issues.healthStatus === 'At Risk' ? 'bg-yellow-50 border-yellow-300' :
-                          'bg-red-50 border-red-300'
+                      issues.healthStatus === 'At Risk' ? 'bg-yellow-50 border-yellow-300' :
+                        'bg-red-50 border-red-300'
                       }`}>
                       <div className="flex justify-between items-center">
                         <div>
@@ -679,17 +662,17 @@ const CropIntelligence = () => {
                         <h3 className="text-xl font-bold text-gray-800">🔬 Detected Issues</h3>
                         {issues.detectedIssues.map((issue, i) => (
                           <div key={i} className={`border-l-4 rounded-lg p-6 ${issue.severity === 'Critical' ? 'bg-red-50 border-red-500' :
-                              issue.severity === 'High' ? 'bg-orange-50 border-orange-500' :
-                                issue.severity === 'Medium' ? 'bg-yellow-50 border-yellow-500' :
-                                  'bg-green-50 border-green-500'
+                            issue.severity === 'High' ? 'bg-orange-50 border-orange-500' :
+                              issue.severity === 'Medium' ? 'bg-yellow-50 border-yellow-500' :
+                                'bg-green-50 border-green-500'
                             }`}>
                             <div className="flex justify-between items-start mb-3">
                               <h4 className="text-xl font-bold text-gray-800">{issue.type}</h4>
                               <div className="flex gap-2">
                                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${issue.severity === 'Critical' ? 'bg-red-200 text-red-800' :
-                                    issue.severity === 'High' ? 'bg-orange-200 text-orange-800' :
-                                      issue.severity === 'Medium' ? 'bg-yellow-200 text-yellow-800' :
-                                        'bg-green-200 text-green-800'
+                                  issue.severity === 'High' ? 'bg-orange-200 text-orange-800' :
+                                    issue.severity === 'Medium' ? 'bg-yellow-200 text-yellow-800' :
+                                      'bg-green-200 text-green-800'
                                   }`}>
                                   {issue.severity}
                                 </span>
@@ -740,8 +723,8 @@ const CropIntelligence = () => {
                                   <div className="flex justify-between items-start mb-2">
                                     <h4 className="font-bold text-gray-800">{rec.action}</h4>
                                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${rec.priority === 'High' ? 'bg-red-100 text-red-700' :
-                                        rec.priority === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
-                                          'bg-green-100 text-green-700'
+                                      rec.priority === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
+                                        'bg-green-100 text-green-700'
                                       }`}>
                                       {rec.priority} Priority
                                     </span>
@@ -1009,10 +992,10 @@ const CropIntelligence = () => {
                     {/* Interpretation */}
                     {ndviStats.interpretation && (
                       <div className={`border-2 rounded-xl p-6 ${ndviStats.interpretation.status === 'Excellent' || ndviStats.interpretation.status === 'Good'
-                          ? 'bg-green-50 border-green-300'
-                          : ndviStats.interpretation.status === 'Fair'
-                            ? 'bg-yellow-50 border-yellow-300'
-                            : 'bg-red-50 border-red-300'
+                        ? 'bg-green-50 border-green-300'
+                        : ndviStats.interpretation.status === 'Fair'
+                          ? 'bg-yellow-50 border-yellow-300'
+                          : 'bg-red-50 border-red-300'
                         }`}>
                         <div className="flex items-start gap-4">
                           <div className="text-4xl">

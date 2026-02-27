@@ -8,14 +8,18 @@ import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-draw';
 import api from '../utils/api';
 import SatelliteNDVI from '../components/SatelliteNDVI';
-import AIChatbot from '../components/AIChatbot';
+import FarmTodo from '../components/FarmTodo';
+import FloatingCalculator from '../components/FloatingCalculator';
+import FloatingActionMenu from '../components/FloatingActionMenu';
+import { useAuthStore } from '../store/authStore';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 export default function Property() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const mapRef = useRef(null);
   const drawLayerRef = useRef(null);
+  const containerRef = useRef(null);
   const [address, setAddress] = useState('');
   const [searching, setSearching] = useState(false);
   const [center, setCenter] = useState({ lat: 20.5937, lng: 78.9629 }); // India fallback
@@ -24,13 +28,14 @@ export default function Property() {
   const [files, setFiles] = useState([]);
   const [propertyName, setPropertyName] = useState('');
   const [currentCrop, setCurrentCrop] = useState('');
+  const [isOtherCrop, setIsOtherCrop] = useState(false);
   const [soilType, setSoilType] = useState('Alluvial');
   const [irrigationType, setIrrigationType] = useState('Rainfed');
   const [submitting, setSubmitting] = useState(false);
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState(null); // For satellite analysis
-  
+
   // Crop recommendation states
   const [allCrops, setAllCrops] = useState([]);
   const [recommendedCrops, setRecommendedCrops] = useState(null);
@@ -112,7 +117,7 @@ export default function Property() {
   useEffect(() => {
     if (!mapRef.current) {
       const map = L.map('property-map').setView([center.lat, center.lng], 6);
-      
+
       // Base layers
       const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors',
@@ -275,7 +280,7 @@ export default function Property() {
       const verifiedTime = new Date(verifiedData.timestamp);
       const now = new Date();
       const hoursDiff = (now - verifiedTime) / (1000 * 60 * 60);
-      
+
       // Check if verification is older than 24 hours
       if (hoursDiff > 24) {
         const confirmProceed = window.confirm(
@@ -296,7 +301,7 @@ export default function Property() {
       formData.append('propertyName', propertyName || `Field ${new Date().toISOString()}`);
       formData.append('area', (calcPolygonArea(polygon[0]) || 0).toString());
       formData.append('areaUnit', 'hectares');
-      
+
       // Add verification data if available
       const lastVerifiedDoc = localStorage.getItem('lastVerifiedDocument');
       if (lastVerifiedDoc) {
@@ -305,7 +310,7 @@ export default function Property() {
         formData.append('verificationScore', verifiedData.verificationScore || 0);
         formData.append('documentVerificationStatus', 'verified');
         formData.append('extractedDocumentData', JSON.stringify(verifiedData.extractedFields || {}));
-        
+
         // Pre-fill from verified document if fields are empty
         if (verifiedData.extractedFields) {
           if (!propertyName && verifiedData.extractedFields.surveyNumber) {
@@ -316,13 +321,13 @@ export default function Property() {
         formData.append('verificationMethod', 'manual');
         formData.append('documentVerificationStatus', 'pending');
       }
-      
+
       // Close the polygon by adding first point at the end (GeoJSON requirement)
       const coords = polygon[0].map(p => [p.lng, p.lat]);
       if (coords.length > 0) {
         coords.push(coords[0]); // Close the polygon
       }
-      
+
       formData.append('coordinates', JSON.stringify([coords]));
       const centroid = computeCentroid(polygon[0]);
       formData.append('latitude', centroid.lat);
@@ -340,10 +345,10 @@ export default function Property() {
 
       if (res.data?.success) {
         alert('✅ Property registered successfully!');
-        
+
         // Clear verification data after successful registration
         localStorage.removeItem('lastVerifiedDocument');
-        
+
         // Refresh property list and reset form
         await fetchProperties();
         setPropertyName('');
@@ -369,32 +374,32 @@ export default function Property() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
-      
+
       <div className="flex-grow">
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-2 py-4 sm:px-4 sm:py-8">
           {/* Page Header */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-8"
           >
-            <h1 className="text-4xl font-bold text-gray-800 mb-2 flex items-center">
+            <h1 className="text-2xl sm:text-4xl font-bold text-gray-800 mb-1 sm:mb-2 flex items-center justify-center sm:justify-start">
               <FaMapMarkedAlt className="mr-3 text-primary-600" />
-              Property Management
+              {t('property.title')}
             </h1>
-            <p className="text-gray-600">Manage your farm properties and view satellite analysis</p>
+            <p className="text-gray-600 text-sm sm:text-base text-center sm:text-left">{t('property.propertyDetails')}</p>
           </motion.div>
 
           {/* Property List Section */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="mb-8"
           >
-            <h2 className="text-3xl font-bold mb-6 flex items-center">
+            <h2 className="text-xl sm:text-3xl font-bold mb-4 sm:mb-6 flex items-center justify-center sm:justify-start">
               <FaMapMarkedAlt className="mr-2 text-primary-600" />
-              My Properties
+              {t('property.title')}
             </h2>
             {loading ? (
               <div className="flex justify-center items-center py-12">
@@ -407,8 +412,8 @@ export default function Property() {
                 className="card bg-gradient-to-br from-primary-50 to-secondary-50 p-8 text-center"
               >
                 <FaMapMarkedAlt className="text-6xl text-primary-600 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-gray-800 mb-2">No Properties Yet</h3>
-                <p className="text-gray-600 mb-4">Start by creating your first property below</p>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">{t('property.noProperties')}</h3>
+                <p className="text-gray-600 mb-4">{t('property.startByCreating')}</p>
                 <FaPlus className="text-primary-600 mx-auto text-3xl" />
               </motion.div>
             ) : (
@@ -428,57 +433,60 @@ export default function Property() {
                         <div className="flex items-center text-sm text-primary-100">
                           {prop.isVerified ? (
                             <span className="flex items-center">
-                              ✅ Verified
+                              ✅ {t('property.verified')}
                             </span>
                           ) : (
                             <span className="flex items-center">
-                              ⏳ Pending Verification
+                              ⏳ {t('property.pendingVerification')}
                             </span>
                           )}
                         </div>
                       </div>
-                      
+
                       <div className="p-4 space-y-3">
                         <div className="flex items-center text-gray-700">
                           <FaLeaf className="text-green-600 mr-2 flex-shrink-0" />
                           <span className="text-sm"><strong>Crop:</strong> {prop.currentCrop || 'Not specified'}</span>
                         </div>
-                        
+
                         <div className="flex items-center text-gray-700">
                           <FaMapMarkedAlt className="text-blue-600 mr-2 flex-shrink-0" />
                           <span className="text-sm"><strong>Area:</strong> {prop.area?.value ? `${prop.area.value.toFixed(2)} ${prop.area.unit || 'ha'}` : 'N/A'}</span>
                         </div>
-                        
+
                         <div className="flex items-center text-gray-700">
                           <FaMountain className="text-amber-700 mr-2 flex-shrink-0" />
                           <span className="text-sm"><strong>Soil:</strong> {prop.soilType}</span>
                         </div>
-                        
+
                         <div className="flex items-center text-gray-700">
                           <FaTint className="text-cyan-600 mr-2 flex-shrink-0" />
                           <span className="text-sm"><strong>Irrigation:</strong> {prop.irrigationType}</span>
                         </div>
-                        
+
                         {prop.centerCoordinates?.latitude && prop.centerCoordinates?.longitude && (
                           <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded">
                             📍 {prop.centerCoordinates.latitude.toFixed(4)}, {prop.centerCoordinates.longitude.toFixed(4)}
                           </div>
                         )}
-                        
+
                         {prop.documents && prop.documents.length > 0 && (
                           <div className="text-xs text-gray-600 bg-blue-50 p-2 rounded">
                             📄 {prop.documents.length} document(s) attached
                           </div>
                         )}
                       </div>
-                      
+
                       <div className="p-4 pt-0">
                         <button
-                          onClick={() => setSelectedProperty(prop)}
+                          onClick={() => {
+                            setSelectedProperty(prop);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
                           className="btn-primary w-full flex items-center justify-center space-x-2 hover:scale-105 active:scale-95 transition-transform duration-200"
                         >
                           <FaSatellite />
-                          <span>View Satellite Analysis</span>
+                          <span>{t('property.viewSatellite')}</span>
                         </button>
                       </div>
                     </div>
@@ -497,9 +505,9 @@ export default function Property() {
             >
               <button
                 onClick={() => setSelectedProperty(null)}
-                className="absolute top-4 right-4 z-10 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors shadow-lg"
+                className="absolute top-2 right-2 sm:top-4 sm:right-4 z-10 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors shadow-lg"
               >
-                <FaTimes className="text-xl" />
+                <FaTimes className="text-base sm:text-xl" />
               </button>
               <SatelliteNDVI
                 propertyId={selectedProperty._id}
@@ -514,36 +522,36 @@ export default function Property() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <h2 className="text-3xl font-bold mb-6 flex items-center">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 flex items-center justify-center sm:justify-start">
               <FaPlus className="mr-2 text-primary-600" />
-              Add New Property
+              {t('property.addProperty')}
             </h2>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="col-span-2">
-                <div className="card overflow-hidden">
-                  <div id="property-map" style={{ height: '600px' }} />
+            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <div className="card overflow-hidden p-0 sm:p-0">
+                  <div id="property-map" className="h-[400px] sm:h-[500px] lg:h-[600px] w-full" />
                 </div>
               </div>
 
-              <div className="col-span-1">
-                <div className="card bg-white">
-                  <div className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white p-4 rounded-t-lg mb-4 -m-6 mb-6">
-                    <h3 className="text-xl font-bold flex items-center">
+              <div className="lg:col-span-1">
+                <div className="card bg-white p-5 sm:p-6">
+                  <div className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white p-4 rounded-t-lg mb-6 -mx-5 sm:-mx-6 -mt-5 sm:-mt-6">
+                    <h3 className="text-lg sm:text-xl font-bold flex items-center">
                       <FaMapMarkedAlt className="mr-2" />
-                      Property Details
+                      {t('property.propertyDetails')}
                     </h3>
                   </div>
 
                   <label className="block mb-2 font-medium text-gray-700 flex items-center">
                     <FaMapMarkedAlt className="mr-2 text-primary-600" />
-                    Search Location
+                    {t('property.searchLocation')}
                   </label>
                   <div className="flex mb-4">
-                    <input 
-                      value={address} 
-                      onChange={e => setAddress(e.target.value)} 
-                      className="flex-1 input-field" 
-                      placeholder="Type address (e.g., Mumbai, Maharashtra)" 
+                    <input
+                      value={address}
+                      onChange={e => setAddress(e.target.value)}
+                      className="flex-1 input-field"
+                      placeholder="Type address (e.g., Mumbai, Maharashtra)"
                     />
                     <motion.button
                       whileHover={{ scale: 1.05 }}
@@ -552,76 +560,111 @@ export default function Property() {
                       disabled={searching}
                       className="btn-outline ml-2 px-4"
                     >
-                      {searching ? '🔍 Searching...' : '🔍 Search'}
+                      {searching ? (i18n.language === 'en' ? '🔍 Searching...' : '🔍 खोज रहे हैं...') : (i18n.language === 'en' ? '🔍 Search' : '🔍 खोजें')}
                     </motion.button>
                   </div>
 
-                  <label className="block mb-2 font-medium text-gray-700">Property Name *</label>
-                  <input 
-                    value={propertyName} 
-                    onChange={e => setPropertyName(e.target.value)} 
-                    className="input-field mb-4" 
-                    placeholder="e.g., North Field, Rice Paddy" 
+                  <label className="block mb-2 font-medium text-gray-700">{t('property.propertyName')} *</label>
+                  <input
+                    value={propertyName}
+                    onChange={e => setPropertyName(e.target.value)}
+                    className="input-field mb-4"
+                    placeholder="e.g., North Field, Rice Paddy"
                   />
 
-                  <label className="block mb-2 font-medium text-gray-700">Calculated Area</label>
+                  <label className="block mb-2 font-medium text-gray-700">{t('property.calculatedArea')}</label>
                   <div className="mb-4 p-3 bg-primary-50 border-2 border-primary-200 rounded-lg text-center">
                     <span className="text-2xl font-bold text-primary-600">
-                      {area || '📐 Draw polygon on map'}
+                      {area || t('property.drawPolygon')}
                     </span>
                   </div>
 
                   <label className="block mb-2 font-medium text-gray-700 flex items-center">
                     <FaLeaf className="mr-2 text-green-600" />
-                    Current Crop
+                    {t('property.currentCrop')}
                   </label>
-                  <input 
-                    value={currentCrop} 
-                    onChange={e => setCurrentCrop(e.target.value)} 
-                    className="input-field mb-2" 
-                    placeholder="e.g., Wheat, Rice, Cotton" 
-                    list="crop-suggestions"
-                  />
-                  <datalist id="crop-suggestions">
-                    {allCrops.map((crop, index) => (
-                      <option key={index} value={crop} />
-                    ))}
-                  </datalist>
-                  <p className="text-xs text-gray-500 mb-4">
-                    💡 Choose from {allCrops.length}+ crops or type to search
-                  </p>
+                  <div className="space-y-3 mb-4">
+                    <select
+                      value={isOtherCrop ? 'other' : currentCrop}
+                      onChange={e => {
+                        if (e.target.value === 'other') {
+                          setIsOtherCrop(true);
+                          setCurrentCrop('');
+                        } else {
+                          setIsOtherCrop(false);
+                          setCurrentCrop(e.target.value);
+                        }
+                      }}
+                      className="input-field w-full"
+                    >
+                      <option value="">{t('common.selectCrop')}</option>
+                      <optgroup label="Common Crops">
+                        <option value="Wheat">{t('calculator.crops.wheat')}</option>
+                        <option value="Rice (Paddy)">{t('calculator.crops.rice')}</option>
+                        <option value="Cotton">{t('calculator.crops.cotton')}</option>
+                        <option value="Sugarcane">{t('calculator.crops.sugarcane')}</option>
+                        <option value="Maize">{t('calculator.crops.maize')}</option>
+                      </optgroup>
+                      <option value="other">🔍 Other (Search 1000+ Crops)...</option>
+                    </select>
+
+                    {isOtherCrop && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        className="relative"
+                      >
+                        <input
+                          value={currentCrop}
+                          onChange={e => setCurrentCrop(e.target.value)}
+                          className="input-field w-full"
+                          placeholder={t('property.currentCrop')}
+                          list="crop-suggestions"
+                          autoComplete="off"
+                        />
+                        <datalist id="crop-suggestions">
+                          {allCrops.map((crop, index) => (
+                            <option key={index} value={crop} />
+                          ))}
+                        </datalist>
+                        <p className="text-[10px] text-gray-500 mt-1">
+                          {t('property.cropSuggestions')}
+                        </p>
+                      </motion.div>
+                    )}
+                  </div>
 
                   <label className="block mb-2 font-medium text-gray-700 flex items-center">
                     <FaMountain className="mr-2 text-amber-700" />
-                    Soil Type
+                    {t('property.soilType')}
                   </label>
-                  <select 
-                    value={soilType} 
-                    onChange={e => setSoilType(e.target.value)} 
+                  <select
+                    value={soilType}
+                    onChange={e => setSoilType(e.target.value)}
                     className="input-field mb-4"
                   >
-                    <option>Alluvial</option>
-                    <option>Black</option>
-                    <option>Red</option>
-                    <option>Laterite</option>
-                    <option>Desert</option>
-                    <option>Mountain</option>
-                    <option>Other</option>
+                    <option value="Alluvial">{t('property.soilTypes.alluvial')}</option>
+                    <option value="Black">{t('property.soilTypes.black')}</option>
+                    <option value="Red">{t('property.soilTypes.red')}</option>
+                    <option value="Laterite">{t('property.soilTypes.laterite')}</option>
+                    <option value="Desert">{t('property.soilTypes.desert')}</option>
+                    <option value="Mountain">{t('property.soilTypes.mountain')}</option>
+                    <option value="Other">{t('property.soilTypes.other')}</option>
                   </select>
 
                   <label className="block mb-2 font-medium text-gray-700 flex items-center">
                     <FaTint className="mr-2 text-cyan-600" />
-                    Irrigation Type
+                    {t('property.irrigationType')}
                   </label>
-                  <select 
-                    value={irrigationType} 
-                    onChange={e => setIrrigationType(e.target.value)} 
+                  <select
+                    value={irrigationType}
+                    onChange={e => setIrrigationType(e.target.value)}
                     className="input-field mb-4"
                   >
-                    <option>Rainfed</option>
-                    <option>Drip</option>
-                    <option>Sprinkler</option>
-                    <option>Other</option>
+                    <option value="Rainfed">{t('property.irrigationTypes.rainfed')}</option>
+                    <option value="Drip">{t('property.irrigationTypes.drip')}</option>
+                    <option value="Sprinkler">{t('property.irrigationTypes.sprinkler')}</option>
+                    <option value="Other">{t('property.irrigationTypes.other')}</option>
                   </select>
 
                   {/* Crop Recommendation Button */}
@@ -635,12 +678,12 @@ export default function Property() {
                     {loadingRecommendations ? (
                       <>
                         <div className="spinner w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        <span>Getting Recommendations...</span>
+                        <span>{t('property.gettingRecommendations')}</span>
                       </>
                     ) : (
                       <>
                         <FaLeaf />
-                        <span>🌾 Get Crop Recommendations (1000+ Crops)</span>
+                        <span>{t('property.cropRecommendations')}</span>
                       </>
                     )}
                   </motion.button>
@@ -655,7 +698,7 @@ export default function Property() {
                       <div className="flex items-center justify-between mb-4">
                         <h4 className="text-xl font-bold text-green-800 flex items-center">
                           <span className="mr-2">🌾</span>
-                          Top Recommended Crops
+                          {t('property.topRecommended')}
                         </h4>
                         <button
                           onClick={() => setShowRecommendations(false)}
@@ -694,22 +737,20 @@ export default function Property() {
                               whileHover={{ scale: 1.05 }}
                               whileTap={{ scale: 0.95 }}
                               onClick={() => setCurrentCrop(rec.crop)}
-                              className={`p-3 rounded-lg border-2 text-left transition-all ${
-                                currentCrop === rec.crop
-                                  ? 'border-green-500 bg-green-100'
-                                  : 'border-gray-200 hover:border-green-300 bg-white'
-                              }`}
+                              className={`p-3 rounded-lg border-2 text-left transition-all ${currentCrop === rec.crop
+                                ? 'border-green-500 bg-green-100'
+                                : 'border-gray-200 hover:border-green-300 bg-white'
+                                }`}
                             >
                               <div className="flex items-center justify-between">
                                 <div>
                                   <div className="font-semibold text-sm">{rec.crop}</div>
-                                  <div className={`text-xs ${
-                                    rec.suitability === 'Excellent' ? 'text-green-600' :
+                                  <div className={`text-xs ${rec.suitability === 'Excellent' ? 'text-green-600' :
                                     rec.suitability === 'Good' ? 'text-blue-600' :
-                                    'text-yellow-600'
-                                  }`}>
+                                      'text-yellow-600'
+                                    }`}>
                                     {rec.suitability === 'Excellent' ? '⭐⭐⭐' :
-                                     rec.suitability === 'Good' ? '⭐⭐' : '⭐'}
+                                      rec.suitability === 'Good' ? '⭐⭐' : '⭐'}
                                     {' '}{rec.suitability}
                                   </div>
                                 </div>
@@ -772,80 +813,81 @@ export default function Property() {
                     </motion.div>
                   )}
 
-              <label className="block mb-2 font-medium text-gray-700">Property Papers (images/PDF, max 5)</label>
-              <input type="file" multiple onChange={handleFiles} className="mb-4 text-sm" accept="image/*,.pdf" />
+                  <label className="block mb-2 font-medium text-gray-700">Property Papers (images/PDF, max 5)</label>
+                  <input type="file" multiple onChange={handleFiles} className="mb-4 text-sm" accept="image/*,.pdf" />
 
-              {/* Document Verification Status */}
-              {(() => {
-                const lastVerified = localStorage.getItem('lastVerifiedDocument');
-                if (lastVerified) {
-                  const verifiedData = JSON.parse(lastVerified);
-                  return (
-                    <div className="mb-4 p-4 bg-green-50 border-2 border-green-300 rounded-xl">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center space-x-2">
-                          <span className="text-2xl">✅</span>
-                          <span className="font-bold text-green-800">Document Verified</span>
+                  {/* Document Verification Status */}
+                  {(() => {
+                    const lastVerified = localStorage.getItem('lastVerifiedDocument');
+                    if (lastVerified) {
+                      const verifiedData = JSON.parse(lastVerified);
+                      return (
+                        <div className="mb-4 p-4 bg-green-50 border-2 border-green-300 rounded-xl">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center space-x-2">
+                              <span className="text-2xl">✅</span>
+                              <span className="font-bold text-green-800">{t('property.verified')}</span>
+                            </div>
+                            <span className="text-sm font-semibold text-green-700 bg-green-200 px-2 py-1 rounded">
+                              {verifiedData.verificationScore}% Match
+                            </span>
+                          </div>
+                          <p className="text-xs text-green-700">
+                            Your documents have been verified by AI. You can now register your property securely.
+                          </p>
                         </div>
-                        <span className="text-sm font-semibold text-green-700 bg-green-200 px-2 py-1 rounded">
-                          {verifiedData.verificationScore}% Match
-                        </span>
-                      </div>
-                      <p className="text-xs text-green-700">
-                        Your documents have been verified by AI. You can now register your property securely.
-                      </p>
-                    </div>
-                  );
-                } else {
-                  return (
-                    <div className="mb-4 p-4 bg-yellow-50 border-2 border-yellow-300 rounded-xl">
-                      <div className="flex items-center mb-2">
-                        <span className="text-2xl mr-2">⚠️</span>
-                        <span className="font-bold text-yellow-800">No Verified Documents</span>
-                      </div>
-                      <p className="text-xs text-yellow-700 mb-2">
-                        We recommend verifying your land documents using AI for fraud prevention.
-                      </p>
-                      <a 
-                        href="/documents" 
-                        className="text-xs text-blue-600 hover:text-blue-800 underline font-semibold"
-                      >
-                        → Verify Documents Now
-                      </a>
-                    </div>
-                  );
-                }
-              })()}
+                      );
+                    } else {
+                      return (
+                        <div className="mb-4 p-4 bg-yellow-50 border-2 border-yellow-300 rounded-xl">
+                          <div className="flex items-center mb-2">
+                            <span className="text-2xl mr-2">⚠️</span>
+                            <span className="font-bold text-yellow-800">{t('property.noVerifiedDocs')}</span>
+                          </div>
+                          <p className="text-xs text-yellow-700 mb-2">
+                            {t('property.verifyDocsWarning')}
+                          </p>
+                          <a
+                            href="/documents"
+                            className="text-xs text-blue-600 hover:text-blue-800 underline font-semibold"
+                          >
+                            → {t('property.verifyNow')}
+                          </a>
+                        </div>
+                      );
+                    }
+                  })()}
 
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleSubmit}
-                disabled={submitting}
-                className="btn-primary w-full py-3 flex items-center justify-center space-x-2 disabled:opacity-50"
-              >
-                {submitting ? (
-                  <>
-                    <div className="spinner w-5 h-5" />
-                    <span>Submitting...</span>
-                  </>
-                ) : (
-                  <>
-                    <FaPlus />
-                    <span>Create Property</span>
-                  </>
-                )}
-              </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleSubmit}
+                    disabled={submitting}
+                    className="btn-primary w-full py-3 flex items-center justify-center space-x-2 disabled:opacity-50"
+                  >
+                    {submitting ? (
+                      <>
+                        <div className="spinner w-5 h-5" />
+                        <span>{t('property.submitting')}</span>
+                      </>
+                    ) : (
+                      <>
+                        <FaPlus />
+                        <span>{t('property.createProperty')}</span>
+                      </>
+                    )}
+                  </motion.button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        </motion.div>
+          </motion.div>
         </div>
       </div>
-      
+
       {/* AI Chatbot */}
-      <AIChatbot />
-      
+      {/* Floating Action Menu */}
+      <FloatingActionMenu />
+
       <Footer />
     </div>
   );

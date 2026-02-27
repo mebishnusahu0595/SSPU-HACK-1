@@ -9,9 +9,7 @@ import { useTranslation } from 'react-i18next';
 export default function LandingPage() {
   const { t } = useTranslation();
   const [counters, setCounters] = useState({
-    farmers: 0,
     hectares: 0,
-    claims: 0,
     uptime: 0
   });
 
@@ -42,9 +40,7 @@ export default function LandingPage() {
     const interval = duration / steps;
 
     const targets = {
-      farmers: 10000,
       hectares: 50000,
-      claims: 100,
       uptime: 99.9
     };
 
@@ -55,9 +51,7 @@ export default function LandingPage() {
       const progress = step / steps;
 
       setCounters({
-        farmers: Math.floor(targets.farmers * progress),
         hectares: Math.floor(targets.hectares * progress),
-        claims: Math.floor(targets.claims * progress),
         uptime: parseFloat((targets.uptime * progress).toFixed(1))
       });
 
@@ -147,27 +141,27 @@ export default function LandingPage() {
               🚀 {t('landing.geoaiBadge')}
             </span>
           </motion.div>
-          
+
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-gray-800 mb-6 leading-tight">
             {t('landing.heroTitle')}{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-secondary-600">
               {t('landing.heroTitleHighlight')}
             </span>
           </h1>
-          
+
           <p className="text-lg md:text-xl lg:text-2xl text-gray-600 mb-10 leading-relaxed max-w-3xl mx-auto">
             {t('landing.heroSubtitle')}
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-            <Link 
-              to="/signup" 
+            <Link
+              to="/signup"
               className="w-full sm:w-auto btn-primary text-lg px-10 py-4 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all"
             >
               {t('landing.getStartedFree')}
             </Link>
-            <Link 
-              to="/login" 
+            <Link
+              to="/login"
               className="w-full sm:w-auto btn-outline text-lg px-10 py-4"
             >
               {t('landing.loginToDashboard')}
@@ -195,25 +189,12 @@ export default function LandingPage() {
       {/* Stats Section */}
       <section ref={statsRef} className="bg-white py-12 shadow-lg">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 gap-8 max-w-4xl mx-auto">
             <motion.div
               initial={{ opacity: 0, scale: 0.5 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 0 }}
-              className="text-center"
-            >
-              <h3 className="text-3xl md:text-4xl font-bold text-primary-600 mb-2">
-                {formatNumber(counters.farmers, 'farmers')}
-              </h3>
-              <p className="text-gray-600 text-sm md:text-base">{t('landing.stats.farmers')}</p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
               className="text-center"
             >
               <h3 className="text-3xl md:text-4xl font-bold text-primary-600 mb-2">
@@ -226,20 +207,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, scale: 0.5 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="text-center"
-            >
-              <h3 className="text-3xl md:text-4xl font-bold text-primary-600 mb-2">
-                {formatNumber(counters.claims, 'claims')}
-              </h3>
-              <p className="text-gray-600 text-sm md:text-base">{t('landing.stats.claims')}</p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
+              transition={{ delay: 0.1 }}
               className="text-center"
             >
               <h3 className="text-3xl md:text-4xl font-bold text-primary-600 mb-2">
@@ -278,7 +246,7 @@ export default function LandingPage() {
               whileHover={{ y: -10, scale: 1.02 }}
               className="card text-center p-8 hover:shadow-2xl transition-all duration-300 bg-white"
             >
-              <motion.div 
+              <motion.div
                 className="flex justify-center mb-6"
                 whileHover={{ rotate: 360, scale: 1.2 }}
                 transition={{ duration: 0.6 }}
@@ -312,13 +280,13 @@ export default function LandingPage() {
               {t('landing.cta.subtitle')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link 
-                to="/signup" 
+              <Link
+                to="/signup"
                 className="bg-white text-primary-600 hover:bg-primary-50 font-bold py-4 px-10 rounded-lg text-lg transition-all shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
               >
                 {t('landing.cta.createAccount')}
               </Link>
-              <a 
+              <a
                 href="#features"
                 className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-primary-600 font-bold py-4 px-10 rounded-lg text-lg transition-all"
               >

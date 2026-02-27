@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react';
 import { useAuthStore } from '../store/authStore';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  FaUser, 
-  FaEnvelope, 
-  FaPhone, 
-  FaLanguage, 
-  FaEdit, 
-  FaSave, 
-  FaTimes, 
+import {
+  FaUser,
+  FaEnvelope,
+  FaPhone,
+  FaLanguage,
+  FaEdit,
+  FaSave,
+  FaTimes,
   FaCamera,
   FaMapMarkerAlt,
   FaIdCard,
@@ -85,46 +85,46 @@ export default function Profile() {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required';
     } else if (formData.name.trim().length < 3) {
       newErrors.name = 'Name must be at least 3 characters';
     }
-    
+
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email is invalid';
     }
-    
+
     if (!formData.mobile.trim()) {
       newErrors.mobile = 'Mobile number is required';
     } else if (!/^\d{10}$/.test(formData.mobile)) {
       newErrors.mobile = 'Mobile must be 10 digits';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const validatePasswordForm = () => {
     const newErrors = {};
-    
+
     if (!passwordData.currentPassword) {
       newErrors.currentPassword = 'Current password is required';
     }
-    
+
     if (!passwordData.newPassword) {
       newErrors.newPassword = 'New password is required';
     } else if (passwordData.newPassword.length < 6) {
       newErrors.newPassword = 'Password must be at least 6 characters';
     }
-    
+
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -134,19 +134,19 @@ export default function Profile() {
       toast.error('Please fix the errors in the form');
       return;
     }
-    
+
     setLoading(true);
     try {
       const response = await api.put('/auth/profile', formData);
       if (response.data?.success) {
         const updatedFarmer = response.data.data;
         login(updatedFarmer, localStorage.getItem('token'));
-        
+
         // Update language
         if (formData.preferredLanguage !== farmer.preferredLanguage) {
           i18n.changeLanguage(formData.preferredLanguage);
         }
-        
+
         toast.success('Profile updated successfully!');
         setEditMode(false);
       }
@@ -163,14 +163,14 @@ export default function Profile() {
       toast.error('Please fix the errors in the form');
       return;
     }
-    
+
     setLoading(true);
     try {
       const response = await api.put('/auth/change-password', {
         currentPassword: passwordData.currentPassword,
         newPassword: passwordData.newPassword
       });
-      
+
       if (response.data?.success) {
         toast.success('Password changed successfully!');
         setPasswordMode(false);
@@ -248,7 +248,7 @@ export default function Profile() {
     setUploadingPicture(true);
     try {
       const response = await api.delete('/auth/delete-profile-picture');
-      
+
       if (response.data?.success) {
         const updatedFarmer = response.data.data.farmer;
         login(updatedFarmer, localStorage.getItem('token'));
@@ -272,7 +272,7 @@ export default function Profile() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
-      
+
       <div className="flex-grow">
         <div className="container mx-auto px-4 py-8">
           {/* Page Header */}
@@ -295,14 +295,14 @@ export default function Profile() {
               transition={{ delay: 0.2 }}
               className="lg:col-span-1"
             >
-              <div className="card bg-gradient-to-br from-primary-600 to-secondary-600 text-white sticky top-24">
+              <div className="card bg-gradient-to-br from-primary-600 to-secondary-600 text-white lg:sticky lg:top-24">
                 <div className="text-center">
                   {/* Profile Picture */}
                   <div className="relative inline-block mb-4">
                     {getProfilePictureUrl() ? (
                       <div className="w-32 h-32 rounded-full overflow-hidden shadow-xl border-4 border-white">
-                        <img 
-                          src={getProfilePictureUrl()} 
+                        <img
+                          src={getProfilePictureUrl()}
                           alt={farmer?.name}
                           className="w-full h-full object-cover"
                           onError={(e) => {
@@ -319,7 +319,7 @@ export default function Profile() {
                         {farmer?.name?.charAt(0).toUpperCase()}
                       </div>
                     )}
-                    
+
                     {/* Upload/Delete buttons */}
                     <input
                       type="file"
@@ -339,7 +339,7 @@ export default function Profile() {
                         <FaCamera />
                       )}
                     </label>
-                    
+
                     {farmer?.profilePicture && !uploadingPicture && (
                       <button
                         onClick={handleDeleteProfilePicture}
@@ -363,10 +363,10 @@ export default function Profile() {
                       <span className="text-sm">Member Since</span>
                     </div>
                     <p className="font-semibold">
-                      {farmer?.createdAt ? new Date(farmer.createdAt).toLocaleDateString('en-IN', { 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
+                      {farmer?.createdAt ? new Date(farmer.createdAt).toLocaleDateString('en-IN', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
                       }) : 'N/A'}
                     </p>
                   </div>
